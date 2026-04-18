@@ -185,10 +185,6 @@ class Migration(migrations.Migration):
             model_name='roomtype',
             index=models.Index(fields=['price_per_night'], name='room_types_price_p_284bc0_idx'),
         ),
-        migrations.AddConstraint(
-            model_name='room',
-            constraint=models.CheckConstraint(check=models.Q(('floor_number__gte', 1)), name='valid_floor_number'),
-        ),
         migrations.AlterModelTable(
             name='room',
             table='rooms',
