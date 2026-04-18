@@ -12,7 +12,7 @@ def add_service(request):
             return redirect('index')
     else:
         form = ServiceForm()
-    return render(request, 'addNewService.html', {'form': form})
+    return render(request, 'services/addNewService.html', {'form': form})
 
 def add_service_category(request):
     if request.method == 'POST':
@@ -22,7 +22,7 @@ def add_service_category(request):
             return redirect('index')
     else:
         form = ServiceCategoryForm()
-    return render(request, 'addNewServiceCategory.html', {'form': form})
+    return render(request, 'services/addNewServiceCategory.html', {'form': form})
 
 def add_service_request(request):
     if request.method == 'POST':
@@ -32,7 +32,7 @@ def add_service_request(request):
             return redirect('index')
     else:
         form = ServiceRequestForm()
-    return render(request, 'addNewServiceRequest.html', {'form': form})
+    return render(request, 'services/addNewServiceRequest.html', {'form': form})
 
 def service_list(request):
     return render(request, 'services/index.html')
