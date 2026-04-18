@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Room Details - Hotel Management System{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <div class="container">
+        <a href="{% url 'room_list' %}" class="btn btn-outline-primary mb-3">← Back to Rooms</a>
+        
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&h=400" class="card-img-top" alt="Room">
+                    <div class="card-body">
+                        <h2 class="mb-3">Room {{ room.room_number }}</h2>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Room Type</h6>
+                                <p>{{ room.room_type.type_name }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Floor</h6>
+                                <p>{{ room.floor_number }}</p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Capacity</h6>
+                                <p>{{ room.room_type.capacity }} Guests</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Status</h6>
+                                <p><span class="badge bg-success">{{ room.get_status_display }}</span></p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <h6 class="text-muted">Description</h6>
+                                <p>{{ room.room_type.description }}</p>
+                            </div>
+                        </div>
+
+                        <h3 class="text-primary">${{ room.price_per_night }}/night</h3>
+
+                        {% if user.is_authenticated %}
+                            <button class="btn btn-accent btn-lg">Book Now</button>
+                        {% else %}
+                            <a href="{% url 'login' %}" class="btn btn-accent btn-lg">Login to Book</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

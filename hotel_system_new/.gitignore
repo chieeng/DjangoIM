@@ -1,0 +1,45 @@
+# Django
+*.pyc
+__pycache__/
+*.py~
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# Database
+db.sqlite3
+*.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Static and Media
+staticfiles/
+media/
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log
+
+# Testing
+.coverage
+htmlcov/
+
+# OS
+Thumbs.db
+.DS_Store

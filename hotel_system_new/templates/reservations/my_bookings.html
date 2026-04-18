@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings - Hotel Management System{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <div class="container">
+        <h1 class="mb-4 fw-bold">My Bookings</h1>
+        
+        {% if bookings %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Reservation</th>
+                        <th>Booking Date</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>{{ booking.booking_id }}</td>
+                        <td>#{{ booking.reservation.reservation_id }}</td>
+                        <td>{{ booking.booking_date|date:"M d, Y" }}</td>
+                        <td>${{ booking.total_amount }}</td>
+                        <td><span class="badge bg-warning">{{ booking.get_booking_status_display }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">You have no bookings yet.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

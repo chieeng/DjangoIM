@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Housekeeping - Hotel Management System{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <div class="container">
+        <h1 class="mb-4 fw-bold">Housekeeping Tasks</h1>
+        
+        {% if tasks %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Task ID</th>
+                        <th>Room</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                    <tr>
+                        <td>{{ task.housekeeping_id }}</td>
+                        <td>{{ task.room.room_number }}</td>
+                        <td>{{ task.cleaning_date|date:"M d, Y" }}</td>
+                        <td><span class="badge bg-info">{{ task.get_status_display }}</span></td>
+                        <td>{{ task.remarks|truncatewords:5 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">No housekeeping tasks.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
