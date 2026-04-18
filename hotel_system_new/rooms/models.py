@@ -126,7 +126,7 @@ class Room(models.Model):
         ]
         constraints = [
             models.CheckConstraint(
-                check=models.Q(floor_number__gte=1),
+                condition=models.Q(floor_number__gte=1),
                 name='valid_floor_number'
             ),
         ]
