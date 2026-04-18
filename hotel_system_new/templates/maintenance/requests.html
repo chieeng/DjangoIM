@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Maintenance Requests - Hotel Management System{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <div class="container">
+        <h1 class="mb-4 fw-bold">Maintenance Requests</h1>
+        
+        {% if requests %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Room</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in requests %}
+                    <tr>
+                        <td>{{ request.maintenance_id }}</td>
+                        <td>{{ request.room.room_number }}</td>
+                        <td><span class="badge bg-danger">{{ request.get_priority_display }}</span></td>
+                        <td><span class="badge bg-warning">{{ request.get_status_display }}</span></td>
+                        <td>{{ request.report_date|date:"M d, Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">No maintenance requests.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

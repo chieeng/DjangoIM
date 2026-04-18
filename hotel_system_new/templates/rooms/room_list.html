@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Rooms - Hotel Management System{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <div class="container">
+        <h1 class="mb-4 fw-bold">Available Rooms</h1>
+        
+        {% if rooms %}
+        <div class="row g-4">
+            {% for room in rooms %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300" class="card-img-top" alt="{{ room.room_number }}">
+                    <div class="card-body">
+                        <h5 class="card-title">Room {{ room.room_number }}</h5>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                Floor: {{ room.floor_number }}<br>
+                                Type: {{ room.room_type.type_name }}<br>
+                                Capacity: {{ room.room_type.capacity }} guests
+                            </small>
+                        </p>
+                        <h6 class="text-primary">${{ room.price_per_night }}/night</h6>
+                        <span class="badge bg-success">{{ room.get_status_display }}</span>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{% url 'room_detail' room.room_id %}" class="btn btn-primary w-100">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">No rooms available at the moment.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
