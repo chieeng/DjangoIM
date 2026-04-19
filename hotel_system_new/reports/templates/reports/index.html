@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports Dashboard{% endblock %}
+
+{% block content %}
+<div class="py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>Reports Dashboard</h1>
+            <p class="text-muted">Booking reports, revenue summary, and occupancy rate at a glance. Connected across rooms, reservations, billing, services, and housekeeping for full hotel system visibility.</p>
+        </div>
+        <a href="{% url 'reports:add_report' %}" class="btn btn-primary">Add New Booking Report</a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card p-4">
+                <h5>Total Reports</h5>
+                <p class="display-6">{{ summary.total_reports }}</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card p-4">
+                <h5>Total Revenue</h5>
+                <p class="display-6">₱{{ summary.total_revenue|floatformat:2 }}</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card p-4">
+                <h5>Average Occupancy</h5>
+                <p class="display-6">{{ summary.average_occupancy }}%</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Booking Reports</h4>
+            <div class="table-responsive mt-3">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Total Bookings</th>
+                            <th>Revenue</th>
+                            <th>Occupancy</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for report in reports %}
+                        <tr>
+                            <td>{{ report.report_date }}</td>
+                            <td>{{ report.total_bookings }}</td>
+                            <td>₱{{ report.revenue|floatformat:2 }}</td>
+                            <td>{{ report.occupancy_rate|floatformat:2 }}%</td>
+                            <td>{{ report.notes|default:'–' }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">No reports have been added yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

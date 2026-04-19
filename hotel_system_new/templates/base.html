@@ -90,20 +90,29 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'rooms:index' %}">🏨 Hotel Management</a>
+            <a class="navbar-brand" href="{% url 'reports:index' %}">Hotel Management System</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'rooms:index' %}">Home</a>
+                        <a class="nav-link" href="{% url 'reports:index' %}">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'rooms:room_list' %}">Rooms</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'reservations:reservation_list' %}">Reservations</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'services:service_list' %}">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'billing:invoice_list' %}">Billing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'reports:index' %}">Reports</a>
                     </li>
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
@@ -156,7 +165,7 @@
             <div class="row">
                 <div class="col-md-4">
                     <h5>About Us</h5>
-                    <p>Premier hotel management system for seamless guest experience.</p>
+                    <p>Integrated hotel management platform connecting rooms, reservations, billing, housekeeping, services, and staff operations. We unify guest stays, financial reporting, and hotel workflows into one seamless system.</p>
                 </div>
                 <div class="col-md-4">
                     <h5>Quick Links</h5>
@@ -164,11 +173,13 @@
                         <li><a href="{% url 'common:about' %}" class="text-white-50">About</a></li>
                         <li><a href="{% url 'common:contact' %}" class="text-white-50">Contact</a></li>
                         <li><a href="{% url 'services:service_list' %}" class="text-white-50">Services</a></li>
+                        <li><a href="{% url 'rooms:room_list' %}" class="text-white-50">Rooms</a></li>
+                        <li><a href="{% url 'reservations:reservation_list' %}" class="text-white-50">Reservations</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4">
                     <h5>Contact Info</h5>
-                    <p>Email: info@hotel.com<br>Phone: +1 234 567 8900</p>
+                    <p>Email: LexHotel@hotel.com<br>Phone: +63 917 123 4567</p>
                 </div>
             </div>
             <hr class="bg-white-50">

@@ -5,10 +5,9 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from common import views as common_views
 
 urlpatterns = [
-    path('', common_views.index, name='index'),  # Landing page as home
+    path('', include('reports.urls')),
     path('admin/', admin.site.urls),
     path('common/', include('common.urls')),
     path('accounts/', include('accounts.urls')),
