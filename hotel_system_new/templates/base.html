@@ -18,16 +18,19 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: var(--text-color);
             background-color: var(--light-bg);
+            line-height: 1.6;
         }
 
-        navbar {
+        .navbar {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 0.5rem 0;
         }
 
         .nav-link {
             color: #fff !important;
             transition: color 0.3s ease;
+            font-weight: 500;
         }
 
         .nav-link:hover {
@@ -43,6 +46,8 @@
         .btn-primary {
             background-color: var(--secondary-color);
             border-color: var(--secondary-color);
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
         }
 
         .btn-primary:hover {
@@ -50,28 +55,23 @@
             border-color: var(--primary-color);
         }
 
-        .btn-accent {
-            background-color: var(--accent-color);
-            border-color: var(--accent-color);
-            color: #fff;
-        }
-
-        .btn-accent:hover {
-            background-color: #e67e22;
-            border-color: #e67e22;
+        .btn-secondary {
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
         }
 
         footer {
             background-color: var(--primary-color);
             color: #fff;
             margin-top: 50px;
-            padding: 30px 0;
+            padding: 40px 0 20px;
         }
 
         .card {
             border: none;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             border-radius: 8px;
+            margin-bottom: 1.5rem;
         }
 
         .alert {
@@ -79,9 +79,29 @@
             border-radius: 8px;
         }
 
+        .form-control {
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
         .form-control:focus {
             border-color: var(--secondary-color);
             box-shadow: 0 0 0 0.2rem rgba(42, 82, 152, 0.25);
+        }
+
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f1f3f4;
         }
     </style>
     {% block extra_css %}{% endblock %}
@@ -97,21 +117,6 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'reports:index' %}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'rooms:room_list' %}">Rooms</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'reservations:reservation_list' %}">Reservations</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'services:service_list' %}">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'billing:invoice_list' %}">Billing</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'reports:index' %}">Reports</a>
                     </li>
                     {% if user.is_authenticated %}
@@ -126,13 +131,6 @@
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
                             </ul>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'accounts:register' %}">Register</a>
                         </li>
                     {% endif %}
                 </ul>

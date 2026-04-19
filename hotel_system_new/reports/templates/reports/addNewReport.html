@@ -3,50 +3,89 @@
 {% block title %}Add New Booking Report{% endblock %}
 
 {% block content %}
-<div class="py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1>Add New Booking Report</h1>
-            <p class="text-muted">Enter the booking summary, revenue, and occupancy details. This report links with the hotel system's rooms, reservations, billing, and services modules.</p>
-        </div>
-        <a href="{% url 'reports:index' %}" class="btn btn-secondary">Back to Dashboard</a>
-    </div>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="card-title mb-0">Add New Booking Report</h4>
+                            <p class="text-muted mb-0">Enter the booking summary, revenue, and occupancy details. This report links with the hotel system's rooms, reservations, billing, and services modules.</p>
+                        </div>
+                        <a href="{% url 'reports:index' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                            <p class="mb-0">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
 
-    <div class="card p-4">
-        <form method="post" novalidate>
-            {% csrf_token %}
-            {{ form.non_field_errors }}
-            <div class="row gy-3">
-                <div class="col-md-6">
-                    <label class="form-label" for="id_report_date">Report Date</label>
-                    {{ form.report_date }}
-                    {{ form.report_date.errors }}
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label" for="id_total_bookings">Total Bookings</label>
-                    {{ form.total_bookings }}
-                    {{ form.total_bookings.errors }}
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label" for="id_revenue">Total Revenue</label>
-                    {{ form.revenue }}
-                    {{ form.revenue.errors }}
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label" for="id_occupancy_rate">Occupancy Rate (%)</label>
-                    {{ form.occupancy_rate }}
-                    {{ form.occupancy_rate.errors }}
-                </div>
-                <div class="col-12">
-                    <label class="form-label" for="id_notes">Notes</label>
-                    {{ form.notes }}
-                    {{ form.notes.errors }}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.report_date.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-calendar-event me-1"></i>Report Date
+                                </label>
+                                {{ form.report_date }}
+                                {% if form.report_date.errors %}
+                                <div class="text-danger small">{{ form.report_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.total_bookings.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-people me-1"></i>Total Bookings
+                                </label>
+                                {{ form.total_bookings }}
+                                {% if form.total_bookings.errors %}
+                                <div class="text-danger small">{{ form.total_bookings.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.revenue.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-cash me-1"></i>Total Revenue (₱)
+                                </label>
+                                {{ form.revenue }}
+                                {% if form.revenue.errors %}
+                                <div class="text-danger small">{{ form.revenue.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.occupancy_rate.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-percent me-1"></i>Occupancy Rate (%)
+                                </label>
+                                {{ form.occupancy_rate }}
+                                {% if form.occupancy_rate.errors %}
+                                <div class="text-danger small">{{ form.occupancy_rate.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-12">
+                                <label for="{{ form.notes.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-chat-dots me-1"></i>Notes
+                                </label>
+                                {{ form.notes }}
+                                {% if form.notes.errors %}
+                                <div class="text-danger small">{{ form.notes.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle me-2"></i>Save Report
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary">Save Report</button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 {% endblock %}

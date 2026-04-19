@@ -3,54 +3,71 @@
 {% block title %}Reports Dashboard{% endblock %}
 
 {% block content %}
-<div class="py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1>Reports Dashboard</h1>
-            <p class="text-muted">Booking reports, revenue summary, and occupancy rate at a glance. Connected across rooms, reservations, billing, services, and housekeeping for full hotel system visibility.</p>
+<div class="container-fluid py-4">
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-1">Reports Dashboard</h1>
+                    <p class="text-muted mb-0">Booking reports, revenue summary, and occupancy rate at a glance. Connected across rooms, reservations, billing, services, and housekeeping for full hotel system visibility.</p>
+                </div>
+                <a href="{% url 'reports:add_report' %}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus-circle me-2"></i>Add New Booking Report
+                </a>
+            </div>
         </div>
-        <a href="{% url 'reports:add_report' %}" class="btn btn-primary">Add New Booking Report</a>
     </div>
 
     <div class="row mb-4">
         <div class="col-md-4 mb-3">
-            <div class="card p-4">
-                <h5>Total Reports</h5>
-                <p class="display-6">{{ summary.total_reports }}</p>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-file-earmark-text display-4 text-primary mb-3"></i>
+                    <h5 class="card-title">Total Reports</h5>
+                    <p class="display-4 fw-bold text-primary">{{ summary.total_reports }}</p>
+                </div>
             </div>
         </div>
         <div class="col-md-4 mb-3">
-            <div class="card p-4">
-                <h5>Total Revenue</h5>
-                <p class="display-6">₱{{ summary.total_revenue|floatformat:2 }}</p>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-cash-coin display-4 text-success mb-3"></i>
+                    <h5 class="card-title">Total Revenue</h5>
+                    <p class="display-4 fw-bold text-success">₱{{ summary.total_revenue|floatformat:2 }}</p>
+                </div>
             </div>
         </div>
         <div class="col-md-4 mb-3">
-            <div class="card p-4">
-                <h5>Average Occupancy</h5>
-                <p class="display-6">{{ summary.average_occupancy }}%</p>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-graph-up display-4 text-info mb-3"></i>
+                    <h5 class="card-title">Average Occupancy</h5>
+                    <p class="display-4 fw-bold text-info">{{ summary.average_occupancy }}%</p>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="card">
+        <div class="card-header bg-light">
+            <h4 class="card-title mb-0">Booking Reports</h4>
+        </div>
         <div class="card-body">
-            <h4 class="card-title">Booking Reports</h4>
-            <div class="table-responsive mt-3">
-                <table class="table table-hover">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Total Bookings</th>
-                            <th>Revenue</th>
-                            <th>Occupancy</th>
-                            <th>Notes</th>
+                            <th><i class="bi bi-calendar me-1"></i>Date</th>
+                            <th><i class="bi bi-people me-1"></i>Total Bookings</th>
+                            <th><i class="bi bi-cash me-1"></i>Revenue</th>
+                            <th><i class="bi bi-percent me-1"></i>Occupancy</th>
+                            <th><i class="bi bi-chat-dots me-1"></i>Notes</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for report in reports %}
                         <tr>
-                            <td>{{ report.report_date }}</td>
+                            <td>{{ report.report_date|date:"M d, Y" }}</td>
                             <td>{{ report.total_bookings }}</td>
                             <td>₱{{ report.revenue|floatformat:2 }}</td>
                             <td>{{ report.occupancy_rate|floatformat:2 }}%</td>
@@ -58,7 +75,9 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="5">No reports have been added yet.</td>
+                            <td colspan="5" class="text-center py-4">
+                                <i class="bi bi-info-circle text-muted me-2"></i>No reports have been added yet.
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
