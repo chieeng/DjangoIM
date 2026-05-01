@@ -15,7 +15,7 @@ def register(request):
             # Create customer profile
             CustomerProfile.objects.create(user=user)
             messages.success(request, 'Registration successful! Please log in.')
-            return redirect('login')
+            return redirect('accounts:login')
         else:
             for field, errors in form.errors.items():
                 for error in errors:
@@ -28,51 +28,51 @@ def register(request):
 
 def login_view(request):
     """User login view"""
+    next_url = request.POST.get('next') or request.GET.get('next')
     if request.method == 'POST':
         form = CustomAuthenticationForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            messages.success(request, f'Welcome, {user.first_name}!')
-            return redirect('index')
+            remember_me = form.cleaned_data.get('remember_me')
+            if not remember_me:
+                request.session.set_expiry(0)
+            else:
+                request.session.set_expiry(1209600)
+            messages.success(request, f'Welcome, {user.first_name or user.username}!')
+            return redirect(next_url or 'index')
     else:
         form = CustomAuthenticationForm()
     
-    return render(request, 'accounts/login.html', {'form': form})
+    return render(request, 'accounts/login.html', {'form': form, 'next': next_url})
 
 
 def logout_view(request):
     """User logout view"""
     logout(request)
     messages.success(request, 'You have been logged out.')
-    return redirect('login')
+    return redirect('accounts:login')
 
 
-@login_required(login_url='login')
+@login_required(login_url='accounts:login')
 def profile(request):
     """View user profile"""
-    try:
-        customer_profile = request.user.customer_profile
-    except:
-        customer_profile = None
+    customer_profile, created = CustomerProfile.objects.get_or_create(user=request.user)
     
     return render(request, 'accounts/profile.html', {'customer_profile': customer_profile})
 
 
-@login_required(login_url='login')
+@login_required(login_url='accounts:login')
 def edit_profile(request):
     """Edit user profile"""
-    try:
-        customer_profile = request.user.customer_profile
-    except:
-        customer_profile = CustomerProfile.objects.create(user=request.user)
+    customer_profile, created = CustomerProfile.objects.get_or_create(user=request.user)
     
     if request.method == 'POST':
         form = CustomerProfileForm(request.POST, instance=customer_profile)
         if form.is_valid():
             form.save()
             messages.success(request, 'Profile updated successfully!')
-            return redirect('profile')
+            return redirect('accounts:profile')
     else:
         form = CustomerProfileForm(instance=customer_profile)
     

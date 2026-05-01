@@ -142,10 +142,9 @@ def add_room(request):
     return render(request, 'rooms/addNewRoom.html', context)
 
 
-@staff_or_admin_required
 @login_required(login_url='accounts:login')
 def add_reservation(request):
-    """Add new reservation (Staff/Admin only)"""
+    """Add new reservation"""
     # Need to import CustomUser from accounts
     from accounts.models import CustomUser
     

@@ -10,16 +10,16 @@ from common import views as common_views
 urlpatterns = [
     path('', common_views.index, name='index'),  # Landing page as home
     path('admin/', admin.site.urls),
-    path('common/', include('common.urls')),
-    path('accounts/', include('accounts.urls')),
-    path('rooms/', include('rooms.urls')),
-    path('reservations/', include('reservations.urls')),
-    path('services/', include('services.urls')),
-    path('staff/', include('staff.urls')),
-    path('housekeeping/', include('housekeeping.urls')),
-    path('maintenance/', include('maintenance.urls')),
-    path('billing/', include('billing.urls')),
-    path('reviews/', include('reviews.urls')),
+    path('common/', include('common.urls', namespace='common')),
+    path('accounts/', include('accounts.urls', namespace='accounts')),
+    path('rooms/', include('rooms.urls', namespace='rooms')),
+    path('reservations/', include('reservations.urls', namespace='reservations')),
+    path('services/', include('services.urls', namespace='services')),
+    path('staff/', include('staff.urls', namespace='staff')),
+    path('housekeeping/', include('housekeeping.urls', namespace='housekeeping')),
+    path('maintenance/', include('maintenance.urls', namespace='maintenance')),
+    path('billing/', include('billing.urls', namespace='billing')),
+    path('reviews/', include('reviews.urls', namespace='reviews')),
 ]
 
 if settings.DEBUG:
