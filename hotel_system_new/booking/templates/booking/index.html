@@ -1,68 +1,244 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Booking Index</title>
+{% extends 'base.html' %}
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+{% block title %}My Bookings - Hotel Management System{% endblock %}
+
+{% block content %}
+<style>
+    .booking-hero {
+        background: linear-gradient(135deg, #f5efe2 0%, #ffffff 55%, #e7eefb 100%);
+        border-radius: 24px;
+        padding: 36px;
+        margin: 32px 0 24px;
+        box-shadow: 0 16px 40px rgba(24, 44, 79, 0.08);
+    }
+
+    .booking-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #182c4f;
+        margin-bottom: 8px;
+    }
+
+    .booking-subtitle {
+        color: #5c6b80;
+        margin-bottom: 0;
+    }
+
+    .booking-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+
+    .booking-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin: 24px 0 28px;
+    }
+
+    .summary-card {
+        background: #fff;
+        border: 1px solid #e6ebf2;
+        border-radius: 18px;
+        padding: 18px 20px;
+    }
+
+    .summary-label {
+        color: #6f7f95;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+
+    .summary-value {
+        color: #182c4f;
+        font-size: 1.8rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .bookings-panel {
+        background: #fff;
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 16px 40px rgba(24, 44, 79, 0.08);
+        margin-bottom: 40px;
+    }
+
+    .booking-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .booking-table th,
+    .booking-table td {
+        padding: 16px 14px;
+        border-bottom: 1px solid #edf1f6;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .booking-table th {
+        color: #6f7f95;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .room-pill {
+        display: inline-block;
+        background: #eef4ff;
+        color: #1f4ea3;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-weight: 600;
+    }
+
+    .status-pill {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .status-pending {
+        background: #fff4d9;
+        color: #9a6a00;
+    }
+
+    .status-confirmed {
+        background: #dff6e7;
+        color: #17653a;
+    }
+
+    .status-checked_in,
+    .status-checked_out {
+        background: #e2ecff;
+        color: #224ea8;
+    }
+
+    .status-cancelled {
+        background: #ffe1e1;
+        color: #a12727;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 48px 24px;
+        border: 1px dashed #d5ddea;
+        border-radius: 20px;
+        background: #fbfcfe;
+    }
+
+    .empty-state h2 {
+        color: #182c4f;
+        margin-bottom: 12px;
+    }
+
+    .empty-state p {
+        color: #6f7f95;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .booking-hero,
+        .bookings-panel {
+            padding: 20px;
+            border-radius: 18px;
         }
 
-        .container {
-            background: #ffffff;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 400px;
+        .booking-table thead {
+            display: none;
         }
 
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 25px;
+        .booking-table,
+        .booking-table tbody,
+        .booking-table tr,
+        .booking-table td {
+            display: block;
+            width: 100%;
         }
 
-        .btn {
-            display: inline-block;
-            padding: 12px 20px;
-            background: #3498db;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: 0.3s ease;
+        .booking-table tr {
+            padding: 16px 0;
+            border-bottom: 1px solid #edf1f6;
         }
 
-        .btn:hover {
-            background: #217dbb;
-            transform: translateY(-2px);
+        .booking-table td {
+            border: none;
+            padding: 6px 0;
         }
+    }
+</style>
 
-        .note {
-            margin-top: 15px;
-            font-size: 13px;
-            color: #777;
-        }
-    </style>
-</head>
+<section class="booking-hero">
+    <h1 class="booking-title">My Bookings</h1>
+    <p class="booking-subtitle">View your hotel bookings, travel dates, and current reservation status in one place.</p>
 
-<body>
+    <div class="booking-actions">
+        <a href="{% url 'booking:add_booking' %}" class="btn btn-primary">Add New Booking</a>
+        <a href="{% url 'index' %}" class="btn btn-outline-dark">Back to Landing Page</a>
+    </div>
+</section>
 
-<div class="container">
-    <h1>Booking Index Page</h1>
+<section class="booking-summary">
+    <div class="summary-card">
+        <div class="summary-label">Total Bookings</div>
+        <div class="summary-value">{{ bookings|length }}</div>
+    </div>
+    <div class="summary-card">
+        <div class="summary-label">Pending</div>
+        <div class="summary-value">{{ pending_count }}</div>
+    </div>
+    <div class="summary-card">
+        <div class="summary-label">Confirmed</div>
+        <div class="summary-value">{{ confirmed_count }}</div>
+    </div>
+</section>
 
-    <a class="btn" href="{% url 'add_booking' %}">+ Add New Booking</a>
-
-    <p class="note">Manage and create booking records easily</p>
-</div>
-
-</body>
-</html>
+<section class="bookings-panel">
+    {% if bookings %}
+        <div class="table-responsive">
+            <table class="booking-table">
+                <thead>
+                    <tr>
+                        <th>Booking</th>
+                        <th>Room</th>
+                        <th>Check In</th>
+                        <th>Check Out</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                        <tr>
+                            <td>
+                                <strong>#{{ booking.id }}</strong><br>
+                                <span class="text-muted">{{ booking.customer_name }}</span>
+                            </td>
+                            <td><span class="room-pill">Room {{ booking.room_number }}</span></td>
+                            <td>{{ booking.check_in_date }}</td>
+                            <td>{{ booking.check_out_date }}</td>
+                            <td>
+                                <span class="status-pill status-{{ booking.booking_status }}">
+                                    {{ booking.get_booking_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ booking.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h2>No bookings yet</h2>
+            <p>You have not created any bookings yet. Start with your first reservation.</p>
+            <a href="{% url 'booking:add_booking' %}" class="btn btn-primary">Create My First Booking</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
