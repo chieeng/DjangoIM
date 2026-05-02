@@ -27,6 +27,7 @@ class CustomUser(AbstractUser):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
     created_at = models.DateTimeField(auto_now_add=True)
     last_login_custom = models.DateTimeField(null=True, blank=True)
+    name_changed_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name = 'User'
@@ -48,7 +49,7 @@ class CustomerProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='customer_profile')
     address = models.TextField(blank=True)
     id_type = models.CharField(max_length=20, choices=ID_TYPE_CHOICES, blank=True)
-    id_number = models.CharField(max_length=50, unique=True, blank=True)
+    id_number = models.CharField(max_length=50, unique=True, blank=True, null=True)
     loyalty_points = models.IntegerField(default=0)
 
     class Meta:
@@ -57,6 +58,10 @@ class CustomerProfile(models.Model):
 
     def __str__(self):
         return f"Customer: {self.user.username}"
+
+    @staticmethod
+    def generate_pending_id_number(user_id):
+        return f"PENDING-ID-{user_id}"
 
 
 class AdminProfile(models.Model):
