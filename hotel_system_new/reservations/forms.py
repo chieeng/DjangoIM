@@ -54,3 +54,17 @@ class BookingForm(forms.ModelForm):
                 'class': 'form-control'
             }),
         }
+
+
+class UserReservationForm(forms.ModelForm):
+    """Form used by customers to add a new reservation record."""
+    class Meta:
+        model = Reservation
+        fields = ['room', 'check_in_date', 'check_out_date', 'number_of_guests', 'special_request']
+        widgets = {
+            'room': forms.Select(attrs={'class': 'form-control'}),
+            'check_in_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'check_out_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'number_of_guests': forms.NumberInput(attrs={'class': 'form-control', 'min': '1'}),
+            'special_request': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }

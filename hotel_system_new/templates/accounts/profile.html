@@ -15,21 +15,21 @@
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <h6 class="text-muted">Full Name</h6>
-                                <p>{{ user.first_name }} {{ user.last_name }}</p>
+                                <p>{{ current_user.first_name }} {{ current_user.last_name }}</p>
                             </div>
                             <div class="col-md-6">
                                 <h6 class="text-muted">Email</h6>
-                                <p>{{ user.email }}</p>
+                                <p>{{ current_user.email }}</p>
                             </div>
                         </div>
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <h6 class="text-muted">Phone</h6>
-                                <p>{{ user.phone|default:"Not provided" }}</p>
+                                <p>{{ current_user.phone|default:"Not provided" }}</p>
                             </div>
                             <div class="col-md-6">
                                 <h6 class="text-muted">Account Type</h6>
-                                <p>{{ user.get_role_type_display }}</p>
+                                <p>{{ current_user.get_role_type_display }}</p>
                             </div>
                         </div>
                         
@@ -41,14 +41,14 @@
                             </div>
                             <div class="col-md-6">
                                 <h6 class="text-muted">Member Since</h6>
-                                <p>{{ user.created_at|date:"F d, Y" }}</p>
+                                <p>{{ current_user.created_at|date:"F d, Y" }}</p>
                             </div>
                         </div>
                         {% endif %}
 
                         <hr>
 
-                        <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+                        <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary">Edit Profile</a>
                     </div>
                 </div>
 
@@ -58,16 +58,16 @@
                     </div>
                     <div class="card-body">
                         <div class="list-group">
-                            <a href="{% url 'reservation_list' %}" class="list-group-item list-group-item-action">
+                            <a href="{% url 'reservations:reservation_list' %}" class="list-group-item list-group-item-action">
                                 📅 My Reservations
                             </a>
-                            <a href="{% url 'invoice_list' %}" class="list-group-item list-group-item-action">
+                            <a href="{% url 'billing:invoice_list' %}" class="list-group-item list-group-item-action">
                                 📋 Invoices
                             </a>
-                            <a href="{% url 'payment_history' %}" class="list-group-item list-group-item-action">
+                            <a href="{% url 'billing:payment_history' %}" class="list-group-item list-group-item-action">
                                 💳 Payment History
                             </a>
-                            <a href="{% url 'room_list' %}" class="list-group-item list-group-item-action">
+                            <a href="{% url 'rooms:room_list' %}" class="list-group-item list-group-item-action">
                                 🏨 Browse Rooms
                             </a>
                         </div>

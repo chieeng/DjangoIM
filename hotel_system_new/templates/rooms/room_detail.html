@@ -48,7 +48,7 @@
                         {% if user.is_authenticated %}
                             <button class="btn btn-accent btn-lg">Book Now</button>
                         {% else %}
-                            <a href="{% url 'login' %}" class="btn btn-accent btn-lg">Login to Book</a>
+                            <a href="{% url 'accounts:login' %}" class="btn btn-accent btn-lg">Login to Book</a>
                         {% endif %}
                     </div>
                 </div>

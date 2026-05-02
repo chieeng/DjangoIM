@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from .models import MaintenanceRequest
 from .forms import MaintenanceRequestForm
 
 
+@login_required(login_url='accounts:login')
 def maintenance_requests(request):
     """View maintenance requests"""
     requests = MaintenanceRequest.objects.all()
@@ -10,12 +12,14 @@ def maintenance_requests(request):
     return render(request, 'maintenance/requests.html', context)
 
 
+@login_required(login_url='accounts:login')
 def maintenance_index(request):
     """View all maintenance requests"""
     requests = MaintenanceRequest.objects.all()
     return render(request, 'maintenance/index.html', {'requests': requests})
 
 
+@login_required(login_url='accounts:login')
 def add_maintenance_request(request):
     """Add new maintenance request"""
     if request.method == 'POST':
