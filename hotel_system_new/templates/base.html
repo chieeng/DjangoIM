@@ -20,24 +20,32 @@
             background-color: var(--light-bg);
         }
 
-        navbar {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        .navbar {
+            background: #ffffff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .nav-link {
-            color: #fff !important;
+            color: #000 !important;
             transition: color 0.3s ease;
         }
 
         .nav-link:hover {
-            color: var(--accent-color) !important;
+            color: var(--secondary-color) !important;
         }
 
         .navbar-brand {
             font-weight: bold;
             font-size: 1.5rem;
-            color: #fff !important;
+            color: #000 !important;
+        }
+
+        .navbar-toggler {
+            border-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar-toggler-icon {
+            filter: invert(0);
         }
 
         .btn-primary {
@@ -88,7 +96,7 @@
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'rooms:index' %}">🏨 Hotel Management</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
