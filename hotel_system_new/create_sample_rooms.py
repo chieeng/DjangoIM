@@ -23,42 +23,42 @@ def create_sample_rooms():
             'type_name': 'Single Room',
             'description': 'Cozy room for solo travelers with single bed',
             'capacity': 1,
-            'price_per_night': 89.00,
+            'price_per_night': 4900.00,
             'is_active': True,
         },
         {
             'type_name': 'Double Room',
             'description': 'Comfortable room for couples with queen-size bed',
             'capacity': 2,
-            'price_per_night': 129.00,
+            'price_per_night': 7100.00,
             'is_active': True,
         },
         {
             'type_name': 'Twin Room',
             'description': 'Room with two single beds, perfect for friends',
             'capacity': 2,
-            'price_per_night': 119.00,
+            'price_per_night': 6500.00,
             'is_active': True,
         },
         {
             'type_name': 'Suite',
             'description': 'Spacious suite with living area and bedroom',
             'capacity': 3,
-            'price_per_night': 189.00,
+            'price_per_night': 10400.00,
             'is_active': True,
         },
         {
             'type_name': 'Deluxe Room',
             'description': 'Premium room with modern amenities and balcony',
             'capacity': 4,
-            'price_per_night': 249.00,
+            'price_per_night': 13700.00,
             'is_active': True,
         },
         {
             'type_name': 'Penthouse',
             'description': 'Luxury penthouse with spectacular views',
             'capacity': 6,
-            'price_per_night': 499.00,
+            'price_per_night': 27500.00,
             'is_active': True,
         },
     ]
@@ -76,7 +76,7 @@ def create_sample_rooms():
         )
         room_types[rt_data['type_name']] = rt
         status = "✓ Created" if created else "⚠ Already exists"
-        print(f"{status}: {rt_data['type_name']} - ${rt_data['price_per_night']:.2f}/night")
+        print(f"{status}: {rt_data['type_name']} - ₱{rt_data['price_per_night']:.2f}/night")
     
     print("\n" + "="*60)
     print("Creating sample rooms...\n")
@@ -84,29 +84,29 @@ def create_sample_rooms():
     # Create Rooms
     rooms_data = [
         # Ground Floor (101-110)
-        {'room_number': '101', 'floor_number': 1, 'room_type': 'Single Room', 'price_per_night': 89.00},
-        {'room_number': '102', 'floor_number': 1, 'room_type': 'Single Room', 'price_per_night': 89.00},
-        {'room_number': '103', 'floor_number': 1, 'room_type': 'Double Room', 'price_per_night': 129.00},
-        {'room_number': '104', 'floor_number': 1, 'room_type': 'Double Room', 'price_per_night': 129.00},
-        {'room_number': '105', 'floor_number': 1, 'room_type': 'Twin Room', 'price_per_night': 119.00},
+        {'room_number': '101', 'floor_number': 1, 'room_type': 'Single Room', 'price_per_night': 4900.00},
+        {'room_number': '102', 'floor_number': 1, 'room_type': 'Single Room', 'price_per_night': 4900.00},
+        {'room_number': '103', 'floor_number': 1, 'room_type': 'Double Room', 'price_per_night': 7100.00},
+        {'room_number': '104', 'floor_number': 1, 'room_type': 'Double Room', 'price_per_night': 7100.00},
+        {'room_number': '105', 'floor_number': 1, 'room_type': 'Twin Room', 'price_per_night': 6500.00},
         
         # Second Floor (201-210)
-        {'room_number': '201', 'floor_number': 2, 'room_type': 'Single Room', 'price_per_night': 89.00},
-        {'room_number': '202', 'floor_number': 2, 'room_type': 'Double Room', 'price_per_night': 129.00},
-        {'room_number': '203', 'floor_number': 2, 'room_type': 'Suite', 'price_per_night': 189.00},
-        {'room_number': '204', 'floor_number': 2, 'room_type': 'Twin Room', 'price_per_night': 119.00},
-        {'room_number': '205', 'floor_number': 2, 'room_type': 'Double Room', 'price_per_night': 129.00},
+        {'room_number': '201', 'floor_number': 2, 'room_type': 'Single Room', 'price_per_night': 4900.00},
+        {'room_number': '202', 'floor_number': 2, 'room_type': 'Double Room', 'price_per_night': 7100.00},
+        {'room_number': '203', 'floor_number': 2, 'room_type': 'Suite', 'price_per_night': 10400.00},
+        {'room_number': '204', 'floor_number': 2, 'room_type': 'Twin Room', 'price_per_night': 6500.00},
+        {'room_number': '205', 'floor_number': 2, 'room_type': 'Double Room', 'price_per_night': 7100.00},
         
         # Third Floor (301-310)
-        {'room_number': '301', 'floor_number': 3, 'room_type': 'Deluxe Room', 'price_per_night': 249.00},
-        {'room_number': '302', 'floor_number': 3, 'room_type': 'Suite', 'price_per_night': 189.00},
-        {'room_number': '303', 'floor_number': 3, 'room_type': 'Deluxe Room', 'price_per_night': 249.00},
-        {'room_number': '304', 'floor_number': 3, 'room_type': 'Double Room', 'price_per_night': 129.00},
-        {'room_number': '305', 'floor_number': 3, 'room_type': 'Suite', 'price_per_night': 189.00},
+        {'room_number': '301', 'floor_number': 3, 'room_type': 'Deluxe Room', 'price_per_night': 13700.00},
+        {'room_number': '302', 'floor_number': 3, 'room_type': 'Suite', 'price_per_night': 10400.00},
+        {'room_number': '303', 'floor_number': 3, 'room_type': 'Deluxe Room', 'price_per_night': 13700.00},
+        {'room_number': '304', 'floor_number': 3, 'room_type': 'Double Room', 'price_per_night': 7100.00},
+        {'room_number': '305', 'floor_number': 3, 'room_type': 'Suite', 'price_per_night': 10400.00},
         
         # Fourth Floor (401-405)
-        {'room_number': '401', 'floor_number': 4, 'room_type': 'Penthouse', 'price_per_night': 499.00},
-        {'room_number': '402', 'floor_number': 4, 'room_type': 'Deluxe Room', 'price_per_night': 249.00},
+        {'room_number': '401', 'floor_number': 4, 'room_type': 'Penthouse', 'price_per_night': 27500.00},
+        {'room_number': '402', 'floor_number': 4, 'room_type': 'Deluxe Room', 'price_per_night': 13700.00},
     ]
     
     total = 0

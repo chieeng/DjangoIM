@@ -4,6 +4,13 @@
 
 {% block content %}
 <div class="container-fluid py-4">
+    {% if user.is_authenticated %}
+    <div class="mb-4 d-flex justify-content-end gap-2">
+        <a href="{% url 'accounts:edit_profile' %}" class="btn btn-outline-primary">Edit Profile</a>
+        <a href="{% url 'reports:add_report' %}" class="btn btn-outline-success">Add New Record</a>
+        <a href="{% url 'accounts:logout' %}" class="btn btn-outline-danger">Log Off</a>
+    </div>
+    {% endif %}
     <div class="row mb-5">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">

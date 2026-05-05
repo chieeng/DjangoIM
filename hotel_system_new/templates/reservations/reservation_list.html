@@ -35,7 +35,7 @@
             </table>
         </div>
         {% else %}
-        <div class="alert alert-info">You have no reservations yet. <a href="{% url 'room_list' %}">Book a room</a></div>
+        <div class="alert alert-info">You have no reservations yet. <a href="{% url 'rooms:room_list' %}">Book a room</a></div>
         {% endif %}
     </div>
 </div>

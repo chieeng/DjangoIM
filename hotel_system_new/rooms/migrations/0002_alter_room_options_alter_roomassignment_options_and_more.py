@@ -187,7 +187,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='room',
-            constraint=models.CheckConstraint(condition=models.Q(('floor_number__gte', 1)), name='valid_floor_number'),
+            constraint=models.CheckConstraint(condition=models.Q(floor_number__gte=1), name='valid_floor_number'),
         ),
         migrations.AlterModelTable(
             name='room',

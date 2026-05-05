@@ -53,7 +53,7 @@ class RoomType(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.type_name} - ${self.price_per_night:.2f}/night"
+        return f"{self.type_name} - ₱{self.price_per_night:.2f}/night"
     
     def __repr__(self):
         return f"<RoomType: {self.type_name}>"

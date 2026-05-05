@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 
 from .forms import ReportForm
 from .models import Report
 
 
+@login_required(login_url='accounts:login')
 def index(request):
     reports = Report.objects.all()
     summary = {
@@ -22,6 +24,7 @@ def index(request):
     })
 
 
+@login_required(login_url='accounts:login')
 def add_report(request):
     if request.method == 'POST':
         form = ReportForm(request.POST)

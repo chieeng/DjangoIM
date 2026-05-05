@@ -126,9 +126,9 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Login settings
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'index'
-LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'reports:index'
+LOGOUT_REDIRECT_URL = 'accounts:login'
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.CustomUser'

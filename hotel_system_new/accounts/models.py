@@ -48,7 +48,7 @@ class CustomerProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='customer_profile')
     address = models.TextField(blank=True)
     id_type = models.CharField(max_length=20, choices=ID_TYPE_CHOICES, blank=True)
-    id_number = models.CharField(max_length=50, unique=True, blank=True)
+    id_number = models.CharField(max_length=50, blank=True)
     loyalty_points = models.IntegerField(default=0)
 
     class Meta:
