@@ -29,7 +29,25 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = CustomUser
-        fields = ('email', 'first_name', 'last_name', 'phone', 'password1', 'password2')
+        fields = ('username', 'email', 'first_name', 'last_name', 'phone', 'password1', 'password2')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Choose a username',
+        })
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if username is None:
+            raise forms.ValidationError('Username is required.')
+        username = username.strip()
+        if not username:
+            raise forms.ValidationError('Username is required.')
+        self.cleaned_data['username'] = username
+        validated = super().clean_username()
+        return validated if validated is not None else username
 
     def clean_email(self):
         email = self.cleaned_data.get('email')

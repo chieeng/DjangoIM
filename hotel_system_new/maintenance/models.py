@@ -21,7 +21,13 @@ class MaintenanceRequest(models.Model):
     
     maintenance_id = models.AutoField(primary_key=True)
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='maintenance_requests')
-    assigned_to = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
+    assigned_to = models.ForeignKey(
+        CustomUser,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        limit_choices_to={'role_type': 'staff'},
+    )
     issue_description = models.TextField()
     report_date = models.DateField(auto_now_add=True)
     resolved_date = models.DateField(null=True, blank=True)

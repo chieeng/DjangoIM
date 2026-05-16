@@ -1,5 +1,7 @@
 from django import forms
+from accounts.staff_querysets import get_staff_user_queryset, staff_user_label
 from .models import MaintenanceRequest
+
 
 class MaintenanceRequestForm(forms.ModelForm):
     class Meta:
@@ -13,3 +15,8 @@ class MaintenanceRequestForm(forms.ModelForm):
             'status': forms.Select(attrs={'class': 'form-control'}),
             'priority': forms.Select(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['assigned_to'].queryset = get_staff_user_queryset()
+        self.fields['assigned_to'].label_from_instance = staff_user_label
