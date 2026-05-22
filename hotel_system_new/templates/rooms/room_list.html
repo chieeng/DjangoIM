@@ -26,7 +26,7 @@
                         <span class="badge bg-success">{{ room.get_status_display }}</span>
                     </div>
                     <div class="card-footer bg-transparent">
-                        <a href="{% url 'room_detail' room.room_id %}" class="btn btn-primary w-100">View Details</a>
+                        <a href="{% url 'rooms:room_detail' room.room_id %}" class="btn btn-primary w-100">View Details</a>
                     </div>
                 </div>
             </div>

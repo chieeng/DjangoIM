@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Maintenance Requests</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        table, th, td { border: 1px solid #ddd; }
+        th, td { padding: 12px; text-align: left; }
+        th { background-color: #ff6b6b; color: white; }
+        tr:hover { background-color: #f5f5f5; }
+        a { color: #007bff; text-decoration: none; padding: 10px; display: inline-block; border: 1px solid #007bff; border-radius: 5px; margin: 10px 5px 0 0; }
+        a:hover { background-color: #007bff; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Maintenance Requests</h1>
+    <a href="{% url 'maintenance:add_maintenance_request' %}">+ Add New Maintenance Request</a>
+    
+    {% if requests %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Room</th>
+                <th>Assigned To</th>
+                <th>Issue</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Report Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in requests %}
+            <tr>
+                <td>{{ request.maintenance_id }}</td>
+                <td>{{ request.room }}</td>
+                <td>{{ request.assigned_to.username|default:"Unassigned" }}</td>
+                <td>{{ request.issue_description|truncatewords:10 }}</td>
+                <td>{{ request.get_status_display }}</td>
+                <td>{{ request.get_priority_display }}</td>
+                <td>{{ request.report_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No maintenance requests found.</p>
+    {% endif %}
+</body>
+</html>

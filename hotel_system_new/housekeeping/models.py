@@ -13,7 +13,13 @@ class Housekeeping(models.Model):
     
     housekeeping_id = models.AutoField(primary_key=True)
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='housekeeping_tasks')
-    staff = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
+    staff = models.ForeignKey(
+        CustomUser,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        limit_choices_to={'role_type': 'staff'},
+    )
     cleaning_date = models.DateField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     remarks = models.TextField(blank=True)

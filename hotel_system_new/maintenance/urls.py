@@ -4,5 +4,6 @@ from . import views
 app_name = 'maintenance'
 
 urlpatterns = [
-    path('requests/', views.maintenance_requests, name='maintenance_requests'),
+    path('', views.maintenance_index, name='index'),
+    path('addNewMaintenanceRequest/', views.add_maintenance_request, name='add_maintenance_request'),
 ]

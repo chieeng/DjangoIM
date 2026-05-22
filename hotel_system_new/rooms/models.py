@@ -126,6 +126,12 @@ class Room(models.Model):
         ]
         constraints = [ models.CheckConstraint( condition=models.Q(floor_number__gte=1), name='valid_floor_number' ),
 ]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(floor_number__gte=1),
+                name='valid_floor_number'
+            ),
+        ]
 
     def __str__(self):
         return f"Room {self.room_number} (Floor {self.floor_number}) - {self.get_status_display()}"

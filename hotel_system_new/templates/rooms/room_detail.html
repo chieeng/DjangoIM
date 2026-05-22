@@ -7,6 +7,8 @@
     <div class="container">
         <a href="{% url 'rooms:room_list' %}" class="btn btn-outline-primary mb-3">Back to Rooms</a>
 
+        <a href="{% url 'rooms:room_list' %}" class="btn btn-outline-primary mb-3">← Back to Rooms</a>
+        
         <div class="row">
             <div class="col-lg-8">
                 <div class="card shadow-sm mb-4">
@@ -49,6 +51,7 @@
                             <a href="{% url 'booking:book_room' room.pk %}" class="btn btn-accent btn-lg">Book Now</a>
                         {% else %}
                             <a href="{% url 'accounts:login' %}?next={% url 'rooms:room_detail' room.pk %}" class="btn btn-accent btn-lg">Login to Book</a>
+                            <a href="{% url 'accounts:login' %}" class="btn btn-accent btn-lg">Login to Book</a>
                         {% endif %}
                     </div>
                 </div>

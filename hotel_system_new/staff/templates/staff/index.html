@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Staff Assignments</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        table, th, td { border: 1px solid #ddd; }
+        th, td { padding: 12px; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        tr:hover { background-color: #f5f5f5; }
+        a { color: #007bff; text-decoration: none; padding: 10px; display: inline-block; border: 1px solid #007bff; border-radius: 5px; margin: 10px 5px 0 0; }
+        a:hover { background-color: #007bff; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Staff Assignments</h1>
+    <a href="{% url 'staff:add_staff_assignment' %}">+ Add New Staff Assignment</a>
+    
+    {% if assignments %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Staff</th>
+                <th>Assigned Date</th>
+                <th>Status</th>
+                <th>Order</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for assignment in assignments %}
+            <tr>
+                <td>{{ assignment.staff_assignment_id }}</td>
+                <td>{{ assignment.staff.username }}</td>
+                <td>{{ assignment.assigned_date }}</td>
+                <td>{{ assignment.get_assignment_status_display }}</td>
+                <td>{{ assignment.order }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No staff assignments found.</p>
+    {% endif %}
+</body>
+</html>

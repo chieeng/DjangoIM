@@ -27,6 +27,16 @@ urlpatterns = [
     path('edit-profile/', common_views.edit_profile_redirect, name='edit_profile'),
     path('add-record/', common_views.add_new_record, name='add_record'),
     path('logoff/', common_views.logoff_redirect, name='logoff'),
+    path('common/', include('common.urls', namespace='common')),
+    path('accounts/', include('accounts.urls', namespace='accounts')),
+    path('rooms/', include('rooms.urls', namespace='rooms')),
+    path('reservations/', include('reservations.urls', namespace='reservations')),
+    path('services/', include('services.urls', namespace='services')),
+    path('staff/', include('staff.urls', namespace='staff')),
+    path('housekeeping/', include('housekeeping.urls', namespace='housekeeping')),
+    path('maintenance/', include('maintenance.urls', namespace='maintenance')),
+    path('billing/', include('billing.urls', namespace='billing')),
+    path('reviews/', include('reviews.urls', namespace='reviews')),
 ]
 
 if settings.DEBUG:
