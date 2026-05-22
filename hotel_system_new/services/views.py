@@ -34,5 +34,6 @@ def add_service_request(request):
         form = ServiceRequestForm()
     return render(request, 'services/addNewServiceRequest.html', {'form': form})
 
+@login_required(login_url='accounts:login')
 def service_list(request):
     return render(request, 'services/index.html')

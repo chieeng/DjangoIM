@@ -22,6 +22,7 @@ def staff_or_admin_required(view_func):
     return wrapper
 
 
+@login_required(login_url='accounts:login')
 def index(request):
     """Rooms app dashboard - Staff/Admin only"""
     # Restrict to staff and admin only
@@ -59,6 +60,7 @@ def index(request):
     return render(request, 'rooms/dashboard.html', context)
 
 
+@login_required(login_url='accounts:login')
 def room_list(request):
     """List all rooms with filtering options"""
     # Start with all rooms
@@ -99,6 +101,7 @@ def room_list(request):
     return render(request, 'rooms/room_listing.html', context)
 
 
+@login_required(login_url='accounts:login')
 def room_detail(request, pk):
     """Room detail view"""
     room = Room.objects.get(room_id=pk)

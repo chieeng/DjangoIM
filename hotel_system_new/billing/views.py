@@ -1,7 +1,9 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from .models import Invoice, Payment
 
 
+@login_required(login_url='accounts:login')
 def invoice_list(request):
     """List invoices"""
     if request.user.is_authenticated:
@@ -12,6 +14,7 @@ def invoice_list(request):
     return render(request, 'billing/invoice_list.html', context)
 
 
+@login_required(login_url='accounts:login')
 def payment_history(request):
     """View payment history"""
     if request.user.is_authenticated:

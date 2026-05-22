@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Housekeeping Tasks</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        table, th, td { border: 1px solid #ddd; }
+        th, td { padding: 12px; text-align: left; }
+        th { background-color: #4169E1; color: white; }
+        tr:hover { background-color: #f5f5f5; }
+        a { color: #007bff; text-decoration: none; padding: 10px; display: inline-block; border: 1px solid #007bff; border-radius: 5px; margin: 10px 5px 0 0; }
+        a:hover { background-color: #007bff; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Housekeeping Tasks</h1>
+    <a href="{% url 'housekeeping:add_housekeeping' %}">+ Add New Housekeeping Task</a>
+    
+    {% if tasks %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Room</th>
+                <th>Staff</th>
+                <th>Cleaning Date</th>
+                <th>Status</th>
+                <th>Remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr>
+                <td>{{ task.housekeeping_id }}</td>
+                <td>{{ task.room }}</td>
+                <td>{{ task.staff.username|default:"Unassigned" }}</td>
+                <td>{{ task.cleaning_date }}</td>
+                <td>{{ task.get_status_display }}</td>
+                <td>{{ task.remarks|truncatewords:10 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No housekeeping tasks found.</p>
+    {% endif %}
+</body>
+</html>

@@ -236,6 +236,11 @@
         background: #e67e22;
         border-color: #e67e22;
     }
+
+    .action-btn {
+        min-width: 170px;
+        text-align: center;
+    }
 </style>
 
 <div class="hero-booking">
@@ -243,17 +248,17 @@
         <h1 class="hero-title">🏨 Luxury Hotel Rooms</h1>
         <p class="hero-subtitle">Book Your Perfect Room Today</p>
         
-        {% if not user.is_authenticated %}
+        {% if not request.session.username %}
         <div class="auth-buttons">
-            <a href="{% url 'accounts:login' %}" class="auth-buttons signin-btn">Sign In</a>
-            <a href="{% url 'accounts:register' %}" class="auth-buttons signup-btn">Create Account</a>
+            <a href="{% url 'accounts:login' %}" class="signin-btn">Sign In</a>
+            <a href="{% url 'accounts:register' %}" class="signup-btn">Create Account</a>
         </div>
         {% else %}
-        <p style="font-size: 1.1rem; margin-bottom: 24px;">Welcome, {{ user.get_full_name|default:user.username }}!</p>
+        <p style="font-size: 1.1rem;">Welcome, {{ request.session.username }}!</p>
         <div class="auth-buttons">
-            <a href="{% url 'accounts:edit_profile' %}" class="auth-buttons signup-btn">Edit Profile</a>
-            <a href="{% url 'rooms:add_reservation' %}" class="auth-buttons signin-btn">Add New Record</a>
-            <a href="{% url 'accounts:logout' %}" class="auth-buttons signup-btn">Log Out</a>
+            <a href="{% url 'accounts:edit_profile' %}" class="signup-btn action-btn">Edit Profile</a>
+            <a href="{% url 'reservations:add_record' %}" class="signin-btn action-btn">Add New Record</a>
+            <a href="{% url 'accounts:logout' %}" class="signup-btn action-btn">Log Out</a>
         </div>
         {% endif %}
     </div>
@@ -296,7 +301,7 @@
                         ✓ 15 m² • 1 Guest • WiFi • AC
                     </div>
                     <div class="room-price">$89<small>/night</small></div>
-                    {% if user.is_authenticated and user.role_type in 'staff,admin' %}
+                    {% if request.session.username and request.session.user_type in 'staff,admin' %}
                         <a href="{% url 'rooms:index' %}" class="book-btn">Manage Room</a>
                     {% else %}
                         <button class="book-btn" onclick="alert('Sign in to book')">Book Now</button>
@@ -314,7 +319,7 @@
                         ✓ 25 m² • 2 Guests • WiFi • AC
                     </div>
                     <div class="room-price">$129<small>/night</small></div>
-                    {% if user.is_authenticated and user.role_type in 'staff,admin' %}
+                    {% if request.session.username and request.session.user_type in 'staff,admin' %}
                         <a href="{% url 'rooms:index' %}" class="book-btn">Manage Room</a>
                     {% else %}
                         <button class="book-btn" onclick="alert('Sign in to book')">Book Now</button>
@@ -332,7 +337,7 @@
                         ✓ 40 m² • 3 Guests • WiFi • AC • Balcony
                     </div>
                     <div class="room-price">$189<small>/night</small></div>
-                    {% if user.is_authenticated and user.role_type in 'staff,admin' %}
+                    {% if request.session.username and request.session.user_type in 'staff,admin' %}
                         <a href="{% url 'rooms:index' %}" class="book-btn">Manage Room</a>
                     {% else %}
                         <button class="book-btn" onclick="alert('Sign in to book')">Book Now</button>
@@ -350,7 +355,7 @@
                         ✓ 50 m² • 4 Guests • WiFi • AC • Jacuzzi
                     </div>
                     <div class="room-price">$249<small>/night</small></div>
-                    {% if user.is_authenticated and user.role_type in 'staff,admin' %}
+                    {% if request.session.username and request.session.user_type in 'staff,admin' %}
                         <a href="{% url 'rooms:index' %}" class="book-btn">Manage Room</a>
                     {% else %}
                         <button class="book-btn" onclick="alert('Sign in to book')">Book Now</button>
@@ -368,7 +373,7 @@
                         ✓ 100 m² • 6 Guests • WiFi • AC • Full Service
                     </div>
                     <div class="room-price">$499<small>/night</small></div>
-                    {% if user.is_authenticated and user.role_type in 'staff,admin' %}
+                    {% if request.session.username and request.session.user_type in 'staff,admin' %}
                         <a href="{% url 'rooms:index' %}" class="book-btn">Manage Room</a>
                     {% else %}
                         <button class="book-btn" onclick="alert('Sign in to book')">Book Now</button>

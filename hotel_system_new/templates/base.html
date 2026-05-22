@@ -20,7 +20,7 @@
             background-color: var(--light-bg);
         }
 
-        navbar {
+        .navbar {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
@@ -90,14 +90,14 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'index' %}">🏨 Hotel Management</a>
+            <a class="navbar-brand" href="{% url 'common:index' %}">🏨 Hotel Management</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'index' %}">Home</a>
+                        <a class="nav-link" href="{% url 'common:index' %}">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'rooms:room_list' %}">Rooms</a>
@@ -105,17 +105,16 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'services:service_list' %}">Services</a>
                     </li>
-                    {% if user.is_authenticated %}
+                    {% if request.session.username %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown">
-                                👤 {{ user.first_name|default:user.username }}
+                                👤 {{ request.session.username }}
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="userMenu">
-                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">Profile</a></li>
-                                <li><a class="dropdown-item" href="{% url 'reservations:reservation_list' %}">My Reservations</a></li>
-                                <li><a class="dropdown-item" href="{% url 'billing:invoice_list' %}">Invoices</a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:edit_profile' %}">Edit Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'reservations:add_record' %}">Add New Record</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Log Off</a></li>
                             </ul>
                         </li>
                     {% else %}

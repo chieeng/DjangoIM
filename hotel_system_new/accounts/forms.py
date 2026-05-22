@@ -3,6 +3,23 @@ from django import forms
 from .models import CustomUser, CustomerProfile
 
 
+class LoginForm(forms.Form):
+    """Simple login form with username and password."""
+    username = forms.CharField(
+        label="Username",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter username'
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter password'
+        })
+    )
+
+
 class CustomUserCreationForm(UserCreationForm):
     """Form for creating a new user"""
     email = forms.EmailField(required=True)
@@ -12,7 +29,25 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = CustomUser
-        fields = ('email', 'first_name', 'last_name', 'phone', 'password1', 'password2')
+        fields = ('username', 'email', 'first_name', 'last_name', 'phone', 'password1', 'password2')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Choose a username',
+        })
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if username is None:
+            raise forms.ValidationError('Username is required.')
+        username = username.strip()
+        if not username:
+            raise forms.ValidationError('Username is required.')
+        self.cleaned_data['username'] = username
+        validated = super().clean_username()
+        return validated if validated is not None else username
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -54,4 +89,24 @@ class CustomerProfileForm(forms.ModelForm):
             'address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'id_type': forms.Select(attrs={'class': 'form-control'}),
             'id_number': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+class UserProfileForm(forms.ModelForm):
+    """Form for updating required user fields."""
+    password = forms.CharField(
+        required=False,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Leave blank to keep current password'
+        })
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = ('first_name', 'last_name', 'email')
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
         }
