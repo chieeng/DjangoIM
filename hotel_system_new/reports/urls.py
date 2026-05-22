@@ -7,4 +7,7 @@ app_name = 'reports'
 urlpatterns = [
     path('', views.index, name='index'),
     path('addNewReports/', views.add_report, name='add_report'),
+    path('<int:pk>/', views.report_detail, name='report_detail'),
+    path('<int:pk>/edit/', views.edit_report, name='edit_report'),
+    path('<int:pk>/delete/', views.delete_report, name='delete_report'),
 ]

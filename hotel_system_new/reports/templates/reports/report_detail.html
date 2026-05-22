@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Report Details{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Report Details</h4>
+            <a href="{% url 'reports:index' %}" class="btn btn-outline-secondary">Back</a>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">ID</dt>
+                <dd class="col-sm-9">{{ report.id }}</dd>
+
+                <dt class="col-sm-3">Report Date</dt>
+                <dd class="col-sm-9">{{ report.report_date|date:"M d, Y" }}</dd>
+
+                <dt class="col-sm-3">Total Bookings</dt>
+                <dd class="col-sm-9">{{ report.total_bookings }}</dd>
+
+                <dt class="col-sm-3">Revenue</dt>
+                <dd class="col-sm-9">₱{{ report.revenue|floatformat:2 }}</dd>
+
+                <dt class="col-sm-3">Occupancy Rate</dt>
+                <dd class="col-sm-9">{{ report.occupancy_rate|floatformat:2 }}%</dd>
+
+                <dt class="col-sm-3">Notes</dt>
+                <dd class="col-sm-9">{{ report.notes|default:'–' }}</dd>
+            </dl>
+        </div>
+    </div>
+</div>
+{% endblock %}

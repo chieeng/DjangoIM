@@ -60,25 +60,39 @@
             <h4 class="card-title mb-0">Booking Reports</h4>
         </div>
         <div class="card-body">
+            <form method="get" class="mb-3 d-flex gap-2 align-items-center">
+                <label class="mb-0 me-2">Filter by date:</label>
+                <input type="date" name="date" value="{{ date_filter }}" class="form-control form-control-sm" />
+                <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                <a href="{% url 'reports:index' %}" class="btn btn-outline-secondary btn-sm">Clear</a>
+            </form>
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th><i class="bi bi-calendar me-1"></i>Date</th>
                             <th><i class="bi bi-people me-1"></i>Total Bookings</th>
                             <th><i class="bi bi-cash me-1"></i>Revenue</th>
                             <th><i class="bi bi-percent me-1"></i>Occupancy</th>
                             <th><i class="bi bi-chat-dots me-1"></i>Notes</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for report in reports %}
                         <tr>
+                            <td>{{ report.id }}</td>
                             <td>{{ report.report_date|date:"M d, Y" }}</td>
                             <td>{{ report.total_bookings }}</td>
                             <td>₱{{ report.revenue|floatformat:2 }}</td>
                             <td>{{ report.occupancy_rate|floatformat:2 }}%</td>
                             <td>{{ report.notes|default:'–' }}</td>
+                            <td>
+                                <a href="{% url 'reports:report_detail' report.id %}" class="btn btn-sm btn-info me-1">View</a>
+                                <a href="{% url 'reports:edit_report' report.id %}" class="btn btn-sm btn-warning me-1">Edit</a>
+                                <a href="{% url 'reports:delete_report' report.id %}" class="btn btn-sm btn-danger">Delete</a>
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>

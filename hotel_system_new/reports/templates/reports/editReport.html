@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Booking Report{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="card-title mb-0">Edit Booking Report</h4>
+                            <p class="text-muted mb-0">Update the booking summary, revenue, and occupancy details.</p>
+                        </div>
+                        <a href="{% url 'reports:index' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                            <p class="mb-0">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.report_date.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-calendar-event me-1"></i>Report Date
+                                </label>
+                                {{ form.report_date }}
+                                {% if form.report_date.errors %}
+                                <div class="text-danger small">{{ form.report_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.total_bookings.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-people me-1"></i>Total Bookings
+                                </label>
+                                {{ form.total_bookings }}
+                                {% if form.total_bookings.errors %}
+                                <div class="text-danger small">{{ form.total_bookings.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.revenue.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-cash me-1"></i>Total Revenue (₱)
+                                </label>
+                                {{ form.revenue }}
+                                {% if form.revenue.errors %}
+                                <div class="text-danger small">{{ form.revenue.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.occupancy_rate.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-percent me-1"></i>Occupancy Rate (%)
+                                </label>
+                                {{ form.occupancy_rate }}
+                                {% if form.occupancy_rate.errors %}
+                                <div class="text-danger small">{{ form.occupancy_rate.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-12">
+                                <label for="{{ form.notes.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="bi bi-chat-dots me-1"></i>Notes
+                                </label>
+                                {{ form.notes }}
+                                {% if form.notes.errors %}
+                                <div class="text-danger small">{{ form.notes.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

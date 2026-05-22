@@ -53,34 +53,49 @@
                     <h5>Reports</h5>
                 </div>
                 <div class="card-body">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Date</th>
-                                <th>Revenue</th>
-                                <th>Occupancy Rate</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for report in reports %}
-                            <tr>
-                                <td>{{ report.id }}</td>
-                                <td>{{ report.date }}</td>
-                                <td>₱{{ report.revenue }}</td>
-                                <td>{{ report.occupancy_rate }}%</td>
-                                <td>
-                                    <!-- Add actions if needed -->
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="5" class="text-center">No reports available.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    <form method="get" class="mb-3 d-flex gap-2 align-items-center">
+                        <label class="mb-0 me-2">Filter by date:</label>
+                        <input type="date" name="date" value="{{ date_filter }}" class="form-control form-control-sm" />
+                        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                        <a href="{% url 'reports:index' %}" class="btn btn-outline-secondary btn-sm">Clear</a>
+                    </form>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Date</th>
+                                    <th>Total Bookings</th>
+                                    <th>Revenue</th>
+                                    <th>Occupancy Rate</th>
+                                    <th>Notes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for report in reports %}
+                                <tr>
+                                    <td>{{ report.id }}</td>
+                                    <td>{{ report.report_date|date:"M d, Y" }}</td>
+                                    <td>{{ report.total_bookings }}</td>
+                                    <td>₱{{ report.revenue|floatformat:2 }}</td>
+                                    <td>{{ report.occupancy_rate|floatformat:2 }}%</td>
+                                    <td>{{ report.notes|default:'–' }}</td>
+                                    <td>
+                                        <a href="{% url 'reports:report_detail' report.id %}" class="btn btn-sm btn-info me-1">View</a>
+                                        <a href="{% url 'reports:edit_report' report.id %}" class="btn btn-sm btn-warning me-1">Edit</a>
+                                        <a href="{% url 'reports:delete_report' report.id %}" class="btn btn-sm btn-danger">Delete</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center">No reports available.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
