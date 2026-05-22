@@ -395,9 +395,11 @@
                             <a href="{% url 'rooms:room_detail' room.pk %}" class="btn-details">View Details</a>
                             <a href="{% url 'rooms:add_room' %}" class="btn-manage">Manage</a>
                         {% else %}
-                            <button class="btn-book" onclick="alert('{% if user.is_authenticated %}Please use staff/admin account to manage rooms{% else %}Sign in to book this room{% endif %}')">
-                                {% if user.is_authenticated %}View{% else %}Book Now{% endif %}
-                            </button>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'rooms:room_detail' room.pk %}" class="btn-book">Book Now</a>
+                            {% else %}
+                                <a href="{% url 'accounts:login' %}?next={% url 'rooms:room_detail' room.pk %}" class="btn-book">Book Now</a>
+                            {% endif %}
                             <a href="{% url 'rooms:room_detail' room.pk %}" class="btn-details">Details</a>
                         {% endif %}
                     </div>

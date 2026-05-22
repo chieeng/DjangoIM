@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
+from rooms.models import Room
 
 
 def index(request):
     """Landing page view"""
     context = {
         'title': 'Hotel Management System',
+        'featured_rooms': Room.objects.filter(status='available').select_related('room_type').order_by('room_number')[:5],
     }
     return render(request, 'landing.html', context)
 

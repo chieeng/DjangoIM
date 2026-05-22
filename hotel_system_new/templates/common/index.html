@@ -11,11 +11,11 @@
                 <h1 class="display-4 fw-bold mb-3" style="color: #1e3c72;">Welcome to Our Hotel</h1>
                 <p class="lead mb-4">Experience luxury and comfort with our world-class amenities and exceptional service.</p>
                 {% if user.is_authenticated %}
-                    <a href="{% url 'room_list' %}" class="btn btn-lg btn-accent me-2">Book a Room</a>
-                    <a href="{% url 'profile' %}" class="btn btn-lg btn-primary">View Profile</a>
+                    <a href="{% url 'rooms:room_list' %}" class="btn btn-lg btn-accent me-2">Book a Room</a>
+                    <a href="{% url 'accounts:profile' %}" class="btn btn-lg btn-primary">View Profile</a>
                 {% else %}
-                    <a href="{% url 'room_list' %}" class="btn btn-lg btn-accent me-2">View Rooms</a>
-                    <a href="{% url 'login' %}" class="btn btn-lg btn-primary">Login to Book</a>
+                    <a href="{% url 'rooms:room_list' %}" class="btn btn-lg btn-accent me-2">View Rooms</a>
+                    <a href="{% url 'accounts:login' %}?next={% url 'rooms:room_list' %}" class="btn btn-lg btn-primary">Login to Book</a>
                 {% endif %}
             </div>
             <div class="col-lg-6">
@@ -126,9 +126,9 @@
             <h2 class="mb-3">Ready for an Unforgettable Stay?</h2>
             <p class="lead mb-4">Book your room today and experience luxury like never before.</p>
             {% if not user.is_authenticated %}
-                <a href="{% url 'register' %}" class="btn btn-lg btn-accent">Get Started</a>
+                <a href="{% url 'accounts:register' %}" class="btn btn-lg btn-accent">Get Started</a>
             {% else %}
-                <a href="{% url 'room_list' %}" class="btn btn-lg btn-accent">Book Now</a>
+                <a href="{% url 'rooms:room_list' %}" class="btn btn-lg btn-accent">Book Now</a>
             {% endif %}
         </div>
     </div>

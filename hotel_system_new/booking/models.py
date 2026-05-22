@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from rooms.models import Room
 
 
 class Booking(models.Model):
@@ -18,7 +19,15 @@ class Booking(models.Model):
         null=True,
         blank=True,
     )
+    room = models.ForeignKey(
+        Room,
+        on_delete=models.SET_NULL,
+        related_name='booking_requests',
+        null=True,
+        blank=True,
+    )
     customer_name = models.CharField(max_length=100)
+    room_name = models.CharField(max_length=100, blank=True)
     room_number = models.CharField(max_length=20)
     check_in_date = models.DateField()
     check_out_date = models.DateField()
@@ -26,7 +35,10 @@ class Booking(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     class Meta:
+        verbose_name = 'Booking Request'
+        verbose_name_plural = 'Booking Requests'
         ordering = ['-created_at', '-id']
 
     def __str__(self):
-        return f"{self.customer_name} - Room {self.room_number}"
+        room_label = self.room_name or f"Room {self.room_number}"
+        return f"{self.customer_name} - {room_label}"

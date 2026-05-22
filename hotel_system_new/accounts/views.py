@@ -4,6 +4,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomerProfileForm, UserProfileForm
@@ -57,13 +58,16 @@ def login_view(request):
                 request.session['login_time'] = timezone.now().isoformat()
                 request.session['last_activity'] = 'login'
                 messages.success(request, f'Welcome, {user.first_name}!')
+                next_url = request.POST.get('next') or request.GET.get('next')
+                if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+                    return redirect(next_url)
                 return redirect(reverse('index'))
 
             form.add_error(None, 'Please enter a valid email/username and password.')
     else:
         form = CustomAuthenticationForm()
     
-    return render(request, 'accounts/login.html', {'form': form})
+    return render(request, 'accounts/login.html', {'form': form, 'next': request.GET.get('next', '')})
 
 
 def logout_view(request):

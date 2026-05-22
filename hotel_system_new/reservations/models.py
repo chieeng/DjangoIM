@@ -15,7 +15,7 @@ class Reservation(models.Model):
     
     reservation_id = models.AutoField(primary_key=True)
     customer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='reservations')
-    room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
     reservation_date = models.DateField(auto_now_add=True)
     check_in_date = models.DateField()
     check_out_date = models.DateField()
@@ -47,8 +47,8 @@ class Booking(models.Model):
     booking_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
     class Meta:
-        verbose_name = 'Booking'
-        verbose_name_plural = 'Bookings'
+        verbose_name = 'Reservation Billing Booking'
+        verbose_name_plural = 'Reservation Billing Bookings'
 
     def __str__(self):
         return f"Booking {self.booking_id} - ${self.total_amount}"

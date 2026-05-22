@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
@@ -101,7 +101,7 @@ def room_list(request):
 
 def room_detail(request, pk):
     """Room detail view"""
-    room = Room.objects.get(room_id=pk)
+    room = get_object_or_404(Room.objects.select_related('room_type'), pk=pk)
     context = {'room': room}
     return render(request, 'rooms/room_detail.html', context)
 
@@ -145,21 +145,25 @@ def add_room(request):
 @staff_or_admin_required
 @login_required(login_url='accounts:login')
 def add_reservation(request):
-    """Add new reservation (Staff/Admin only)"""
-    # Need to import CustomUser from accounts
     from accounts.models import CustomUser
-    
+
     if request.method == 'POST':
         form = ReservationForm(request.POST)
         if form.is_valid():
             reservation = form.save(commit=False)
             reservation.customer = request.user
             reservation.save()
+
+            # 🔥 UPDATE ROOM STATUS HERE
+            room = reservation.room  # assuming FK in Reservation model
+            room.status = 'occupied'
+            room.save()
+
             messages.success(request, 'Reservation created successfully!')
             return redirect('rooms:index')
     else:
         form = ReservationForm()
-    
+
     context = {'form': form, 'title': 'Add New Reservation'}
     return render(request, 'rooms/addNewReservation.html', context)
 

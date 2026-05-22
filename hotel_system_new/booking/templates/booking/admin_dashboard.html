@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Review - Hotel Management System{% endblock %}
+
+{% block content %}
+<style>
+    .review-header {
+        margin: 32px 0 24px;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .review-title {
+        color: #182c4f;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .review-subtitle {
+        color: #5c6b80;
+        margin: 0;
+    }
+
+    .summary-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+
+    .metric {
+        background: #fff;
+        border: 1px solid #e6ebf2;
+        border-radius: 8px;
+        padding: 16px;
+    }
+
+    .metric-label {
+        color: #6f7f95;
+        font-size: 0.88rem;
+    }
+
+    .metric-value {
+        color: #182c4f;
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+
+    .filter-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+    }
+
+    .review-panel {
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 12px 30px rgba(24, 44, 79, 0.08);
+    }
+
+    .status-pill {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .status-pending {
+        background: #fff4d9;
+        color: #9a6a00;
+    }
+
+    .status-confirmed {
+        background: #dff6e7;
+        color: #17653a;
+    }
+
+    .status-checked_in,
+    .status-checked_out {
+        background: #e2ecff;
+        color: #224ea8;
+    }
+
+    .status-cancelled {
+        background: #ffe1e1;
+        color: #a12727;
+    }
+
+    .action-cell {
+        min-width: 190px;
+    }
+
+    .inline-form {
+        display: inline-block;
+        margin: 2px 4px 2px 0;
+    }
+
+    .empty-review {
+        text-align: center;
+        border: 1px dashed #d5ddea;
+        border-radius: 8px;
+        padding: 36px;
+        color: #6f7f95;
+    }
+</style>
+
+<section class="review-header">
+    <div>
+        <h1 class="review-title">Booking Review</h1>
+        <p class="review-subtitle">Review pending booking requests and approve confirmed stays.</p>
+    </div>
+    <a href="{% url 'booking:index' %}" class="btn btn-outline-dark">My Bookings Dashboard</a>
+</section>
+
+<section class="summary-row">
+    <div class="metric">
+        <div class="metric-label">Total</div>
+        <div class="metric-value">{{ total_count }}</div>
+    </div>
+    <div class="metric">
+        <div class="metric-label">Pending</div>
+        <div class="metric-value">{{ pending_count }}</div>
+    </div>
+    <div class="metric">
+        <div class="metric-label">Confirmed</div>
+        <div class="metric-value">{{ confirmed_count }}</div>
+    </div>
+    <div class="metric">
+        <div class="metric-label">Cancelled</div>
+        <div class="metric-value">{{ cancelled_count }}</div>
+    </div>
+</section>
+
+<section class="review-panel">
+    <div class="filter-row">
+        <a class="btn btn-sm {% if status_filter == 'pending' %}btn-primary{% else %}btn-outline-primary{% endif %}" href="{% url 'booking:admin_dashboard' %}?status=pending">Pending</a>
+        <a class="btn btn-sm {% if status_filter == 'confirmed' %}btn-primary{% else %}btn-outline-primary{% endif %}" href="{% url 'booking:admin_dashboard' %}?status=confirmed">Confirmed</a>
+        <a class="btn btn-sm {% if status_filter == 'cancelled' %}btn-primary{% else %}btn-outline-primary{% endif %}" href="{% url 'booking:admin_dashboard' %}?status=cancelled">Cancelled</a>
+        <a class="btn btn-sm {% if status_filter == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}" href="{% url 'booking:admin_dashboard' %}?status=all">All</a>
+    </div>
+
+    {% if bookings %}
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Booking</th>
+                        <th>Guest</th>
+                        <th>Room</th>
+                        <th>Dates</th>
+                        <th>Status</th>
+                        <th class="action-cell">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                        <tr>
+                            <td>
+                                <strong>#{{ booking.id }}</strong><br>
+                                <span class="text-muted">{{ booking.created_at|date:"M d, Y" }}</span>
+                            </td>
+                            <td>
+                                {{ booking.customer_name }}<br>
+                                <span class="text-muted">{{ booking.customer.email|default:"No email" }}</span>
+                            </td>
+                            <td>
+                                {{ booking.room_name|default:"Room" }}<br>
+                                <span class="text-muted">Room {{ booking.room_number }}</span>
+                            </td>
+                            <td>{{ booking.check_in_date }} to {{ booking.check_out_date }}</td>
+                            <td>
+                                <span class="status-pill status-{{ booking.booking_status }}">
+                                    {{ booking.get_booking_status_display }}
+                                </span>
+                            </td>
+                            <td class="action-cell">
+                                {% if booking.booking_status == 'pending' %}
+                                    <form class="inline-form" method="post" action="{% url 'booking:approve_booking' booking.id %}">
+                                        {% csrf_token %}
+                                        <button class="btn btn-sm btn-success" type="submit">Approve</button>
+                                    </form>
+                                    <form class="inline-form" method="post" action="{% url 'booking:cancel_booking' booking.id %}">
+                                        {% csrf_token %}
+                                        <button class="btn btn-sm btn-outline-danger" type="submit">Cancel</button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-muted">No pending action</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-review">No bookings match this filter.</div>
+    {% endif %}
+</section>
+{% endblock %}

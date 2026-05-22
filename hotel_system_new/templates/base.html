@@ -114,12 +114,24 @@
                         <a class="nav-link" href="{% url 'services:service_list' %}">Services</a>
                     </li>
                     {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'booking:dashboard' %}">Bookings Dashboard</a>
+                        </li>
+                        {% if user.is_staff or user.is_superuser %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'booking:admin_dashboard' %}">Review Bookings</a>
+                            </li>
+                        {% endif %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown">
                                 👤 {{ user.first_name|default:user.username }}
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="userMenu">
                                 <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'booking:dashboard' %}">Bookings Dashboard</a></li>
+                                {% if user.is_staff or user.is_superuser %}
+                                    <li><a class="dropdown-item" href="{% url 'booking:admin_dashboard' %}">Review Pending Bookings</a></li>
+                                {% endif %}
                                 <li><a class="dropdown-item" href="{% url 'reservations:reservation_list' %}">My Reservations</a></li>
                                 <li><a class="dropdown-item" href="{% url 'billing:invoice_list' %}">Invoices</a></li>
                                 <li><hr class="dropdown-divider"></li>

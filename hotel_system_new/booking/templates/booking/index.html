@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+    {% extends 'base.html' %}
 
-{% block title %}My Bookings - Hotel Management System{% endblock %}
+{% block title %}Bookings Dashboard - Hotel Management System{% endblock %}
 
 {% block content %}
 <style>
@@ -174,11 +174,14 @@
 </style>
 
 <section class="booking-hero">
-    <h1 class="booking-title">My Bookings</h1>
-    <p class="booking-subtitle">View your hotel bookings, travel dates, and current reservation status in one place.</p>
+    <h1 class="booking-title">Bookings Dashboard</h1>
+    <p class="booking-subtitle">Track each booking request from pending review through approval.</p>
 
     <div class="booking-actions">
-        <a href="{% url 'booking:add_booking' %}" class="btn btn-primary">Add New Booking</a>
+        <a href="{% url 'rooms:room_list' %}" class="btn btn-primary">Request Booking</a>
+        {% if user.is_staff or user.is_superuser %}
+            <a href="{% url 'booking:admin_dashboard' %}" class="btn btn-outline-primary">Review Pending Requests</a>
+        {% endif %}
         <a href="{% url 'index' %}" class="btn btn-outline-dark">Back to Landing Page</a>
     </div>
 </section>
@@ -186,7 +189,7 @@
 <section class="booking-summary">
     <div class="summary-card">
         <div class="summary-label">Total Bookings</div>
-        <div class="summary-value">{{ bookings|length }}</div>
+        <div class="summary-value">{{ total_count }}</div>
     </div>
     <div class="summary-card">
         <div class="summary-label">Pending</div>
@@ -195,6 +198,10 @@
     <div class="summary-card">
         <div class="summary-label">Confirmed</div>
         <div class="summary-value">{{ confirmed_count }}</div>
+    </div>
+    <div class="summary-card">
+        <div class="summary-label">Cancelled</div>
+        <div class="summary-value">{{ cancelled_count }}</div>
     </div>
 </section>
 
@@ -219,7 +226,10 @@
                                 <strong>#{{ booking.id }}</strong><br>
                                 <span class="text-muted">{{ booking.customer_name }}</span>
                             </td>
-                            <td><span class="room-pill">Room {{ booking.room_number }}</span></td>
+                            <td>
+                                <span class="room-pill">{{ booking.room_name|default:"Room" }}</span><br>
+                                <span class="text-muted">Room {{ booking.room_number }}</span>
+                            </td>
                             <td>{{ booking.check_in_date }}</td>
                             <td>{{ booking.check_out_date }}</td>
                             <td>
@@ -236,8 +246,8 @@
     {% else %}
         <div class="empty-state">
             <h2>No bookings yet</h2>
-            <p>You have not created any bookings yet. Start with your first reservation.</p>
-            <a href="{% url 'booking:add_booking' %}" class="btn btn-primary">Create My First Booking</a>
+            <p>You have not submitted any booking requests yet.</p>
+            <a href="{% url 'rooms:room_list' %}" class="btn btn-primary">Request My First Booking</a>
         </div>
     {% endif %}
 </section>

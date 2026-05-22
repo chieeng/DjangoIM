@@ -1,91 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add New Booking</title>
+{% extends 'base.html' %}
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            margin: 0;
-            padding: 0;
-        }
+{% block title %}Request Booking - Hotel Management System{% endblock %}
 
-        .container {
-            width: 420px;
-            margin: 60px auto;
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
+{% block content %}
+<style>
+    .booking-form-wrap {
+        max-width: 560px;
+        margin: 36px auto;
+        background: #fff;
+        border-radius: 8px;
+        padding: 28px;
+        box-shadow: 0 12px 30px rgba(24, 44, 79, 0.08);
+    }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
-        }
+    .booking-form-wrap h1 {
+        color: #182c4f;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
 
-        form p {
-            margin-bottom: 15px;
-        }
+    .booking-form-wrap p {
+        color: #5c6b80;
+    }
+</style>
 
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            outline: none;
-            transition: 0.2s;
-        }
+<section class="booking-form-wrap">
+    <h1>Request Booking</h1>
+    {% if selected_room %}
+        <p>{{ selected_room.room_type.type_name|default:"Selected room" }} is selected. Choose your stay dates and submit the request for admin approval.</p>
+    {% else %}
+        <p>Choose a room from the room list before submitting a booking request.</p>
+    {% endif %}
 
-        input:focus {
-            border-color: #4a90e2;
-            box-shadow: 0 0 5px rgba(74,144,226,0.3);
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #4a90e2;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            background: #357ab7;
-        }
-
-        .back {
-            display: block;
-            text-align: center;
-            margin-top: 15px;
-            text-decoration: none;
-            color: #4a90e2;
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="container">
-    <h1>Add New Booking</h1>
-
-    <form method="POST">
+    <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Save Booking</button>
+        <button class="btn btn-primary w-100" type="submit">Submit Booking Request</button>
     </form>
 
-    <a class="back" href="{% url 'booking:index' %}">Back to Booking Index</a>
-</div>
-
-</body>
-</html>
+    <a class="btn btn-link w-100 mt-3" href="{% url 'booking:index' %}">Back to Bookings Dashboard</a>
+</section>
+{% endblock %}
