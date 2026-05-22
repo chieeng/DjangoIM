@@ -5,6 +5,8 @@
 {% block content %}
 <div class="py-5">
     <div class="container">
+        <a href="{% url 'rooms:room_list' %}" class="btn btn-outline-primary mb-3">Back to Rooms</a>
+
         <a href="{% url 'rooms:room_list' %}" class="btn btn-outline-primary mb-3">← Back to Rooms</a>
         
         <div class="row">
@@ -13,7 +15,7 @@
                     <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&h=400" class="card-img-top" alt="Room">
                     <div class="card-body">
                         <h2 class="mb-3">Room {{ room.room_number }}</h2>
-                        
+
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <h6 class="text-muted">Room Type</h6>
@@ -46,8 +48,9 @@
                         <h3 class="text-primary">${{ room.price_per_night }}/night</h3>
 
                         {% if user.is_authenticated %}
-                            <button class="btn btn-accent btn-lg">Book Now</button>
+                            <a href="{% url 'booking:book_room' room.pk %}" class="btn btn-accent btn-lg">Book Now</a>
                         {% else %}
+                            <a href="{% url 'accounts:login' %}?next={% url 'rooms:room_detail' room.pk %}" class="btn btn-accent btn-lg">Login to Book</a>
                             <a href="{% url 'accounts:login' %}" class="btn btn-accent btn-lg">Login to Book</a>
                         {% endif %}
                     </div>

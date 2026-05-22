@@ -1,4 +1,7 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+from rooms.models import Room
 from django.views.generic import TemplateView
 
 
@@ -6,6 +9,7 @@ def index(request):
     """Home page."""
     context = {
         'title': 'Hotel Management System',
+        'featured_rooms': Room.objects.filter(status='available').select_related('room_type').order_by('room_number')[:5],
         'username': request.session.get('username'),
         'user_type': request.session.get('user_type'),
     }
@@ -26,3 +30,31 @@ def contact(request):
         return redirect('accounts:login')
 
     return render(request, 'common/contact.html')
+
+@never_cache
+@login_required(login_url='accounts:login')
+def home(request):
+    context = {
+        'session_user_name': request.session.get('user_display_name', request.user.get_full_name() or request.user.username),
+        'session_login_time': request.session.get('login_time'),
+        'session_last_activity': request.session.get('last_activity'),
+    }
+    request.session['last_activity'] = 'home'
+    return render(request, 'home.html', context)
+
+
+@login_required(login_url='accounts:login')
+def add_new_record(request):
+    request.session['last_activity'] = 'add_new_record_redirect'
+    return redirect('booking:add_booking')
+
+
+@login_required(login_url='accounts:login')
+def edit_profile_redirect(request):
+    request.session['last_activity'] = 'edit_profile_redirect'
+    return redirect('accounts:edit_profile')
+
+
+@login_required(login_url='accounts:login')
+def logoff_redirect(request):
+    return redirect('accounts:logout')

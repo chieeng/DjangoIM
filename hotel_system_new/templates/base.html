@@ -21,23 +21,32 @@
         }
 
         .navbar {
+            background: #ffffff;
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .nav-link {
-            color: #fff !important;
+            color: #000 !important;
             transition: color 0.3s ease;
         }
 
         .nav-link:hover {
-            color: var(--accent-color) !important;
+            color: var(--secondary-color) !important;
         }
 
         .navbar-brand {
             font-weight: bold;
             font-size: 1.5rem;
-            color: #fff !important;
+            color: #000 !important;
+        }
+
+        .navbar-toggler {
+            border-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar-toggler-icon {
+            filter: invert(0);
         }
 
         .btn-primary {
@@ -88,7 +97,7 @@
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'common:index' %}">🏨 Hotel Management</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -105,12 +114,28 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'services:service_list' %}">Services</a>
                     </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'booking:dashboard' %}">Bookings Dashboard</a>
+                        </li>
+                        {% if user.is_staff or user.is_superuser %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'booking:admin_dashboard' %}">Review Bookings</a>
+                            </li>
+                        {% endif %}
                     {% if request.session.username %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown">
                                 👤 {{ request.session.username }}
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="userMenu">
+                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'booking:dashboard' %}">Bookings Dashboard</a></li>
+                                {% if user.is_staff or user.is_superuser %}
+                                    <li><a class="dropdown-item" href="{% url 'booking:admin_dashboard' %}">Review Pending Bookings</a></li>
+                                {% endif %}
+                                <li><a class="dropdown-item" href="{% url 'reservations:reservation_list' %}">My Reservations</a></li>
+                                <li><a class="dropdown-item" href="{% url 'billing:invoice_list' %}">Invoices</a></li>
                                 <li><a class="dropdown-item" href="{% url 'accounts:edit_profile' %}">Edit Profile</a></li>
                                 <li><a class="dropdown-item" href="{% url 'reservations:add_record' %}">Add New Record</a></li>
                                 <li><hr class="dropdown-divider"></li>

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'services',
     'billing',
     'reviews',
+    'booking',
 ]
 
 MIDDLEWARE = [
@@ -76,6 +77,10 @@ WSGI_APPLICATION = 'hotel_system.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'hotelsystem',
+        'USER': 'root',
+        'PASSWORD': '123456',
+        'HOST': '127.0.0.1',
         'NAME': 'hotel_db',
         'USER': 'root',
         'PASSWORD': 'root123',
@@ -130,6 +135,11 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Login settings
 LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'index'
+LOGOUT_REDIRECT_URL = 'accounts:login'
+SESSION_COOKIE_AGE = 1800
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 LOGIN_REDIRECT_URL = 'common:index'
 LOGOUT_REDIRECT_URL = 'accounts:login'
 

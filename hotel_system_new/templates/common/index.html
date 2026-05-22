@@ -15,6 +15,7 @@
                     <a href="{% url 'accounts:profile' %}" class="btn btn-lg btn-primary">View Profile</a>
                 {% else %}
                     <a href="{% url 'rooms:room_list' %}" class="btn btn-lg btn-accent me-2">View Rooms</a>
+                    <a href="{% url 'accounts:login' %}?next={% url 'rooms:room_list' %}" class="btn btn-lg btn-primary">Login to Book</a>
                     <a href="{% url 'accounts:login' %}" class="btn btn-lg btn-primary">Login to Book</a>
                 {% endif %}
             </div>
