@@ -75,8 +75,12 @@ WSGI_APPLICATION = 'hotel_system.wsgi.application'
 # Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'hotel_db',
+        'USER': 'root',
+        'PASSWORD': 'root123',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
