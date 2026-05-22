@@ -150,6 +150,7 @@
     }
 
     .book-btn {
+        display: inline-block;
         width: 100%;
         padding: 12px;
         background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
@@ -159,6 +160,8 @@
         font-weight: 600;
         cursor: pointer;
         transition: transform 0.2s;
+        text-decoration: none;
+        text-align: center;
     }
 
     .book-btn:hover {
@@ -245,9 +248,16 @@
         
         {% if not user.is_authenticated %}
         <div class="auth-buttons">
-            <a href="{% url 'accounts:login' %}" class="auth-buttons signin-btn">Sign In</a>
-            <a href="{% url 'accounts:register' %}" class="auth-buttons signup-btn">Create Account</a>
-        </div>
+
+    <a href="{% url 'accounts:login' %}" class="signin-btn">
+        Sign In
+    </a>
+
+    <a href="{% url 'accounts:register' %}" class="signup-btn">
+        Create Account
+    </a>
+
+</div>
         {% else %}
         <p style="font-size: 1.1rem;">Welcome, {{ user.get_full_name|default:user.username }}!</p>
         {% endif %}
@@ -293,8 +303,10 @@
                     <div class="room-price">$89<small>/night</small></div>
                     {% if user.is_authenticated and user.role_type in 'staff,admin' %}
                         <a href="{% url 'rooms:index' %}" class="book-btn">Manage Room</a>
+                    {% elif user.is_authenticated %}
+                        <a href="{% url 'booking:index' %}" class="book-btn">Book Now</a>
                     {% else %}
-                        <button class="book-btn" onclick="alert('Sign in to book')">Book Now</button>
+                        <a href="{% url 'accounts:login' %}" class="book-btn">Book Now</a>
                     {% endif %}
                 </div>
             </div>
@@ -311,8 +323,10 @@
                     <div class="room-price">$129<small>/night</small></div>
                     {% if user.is_authenticated and user.role_type in 'staff,admin' %}
                         <a href="{% url 'rooms:index' %}" class="book-btn">Manage Room</a>
+                    {% elif user.is_authenticated %}
+                        <a href="{% url 'booking:index' %}" class="book-btn">Book Now</a>
                     {% else %}
-                        <button class="book-btn" onclick="alert('Sign in to book')">Book Now</button>
+                        <a href="{% url 'accounts:login' %}" class="book-btn">Book Now</a>
                     {% endif %}
                 </div>
             </div>
@@ -329,8 +343,10 @@
                     <div class="room-price">$189<small>/night</small></div>
                     {% if user.is_authenticated and user.role_type in 'staff,admin' %}
                         <a href="{% url 'rooms:index' %}" class="book-btn">Manage Room</a>
+                    {% elif user.is_authenticated %}
+                        <a href="{% url 'booking:index' %}" class="book-btn">Book Now</a>
                     {% else %}
-                        <button class="book-btn" onclick="alert('Sign in to book')">Book Now</button>
+                        <a href="{% url 'accounts:login' %}" class="book-btn">Book Now</a>
                     {% endif %}
                 </div>
             </div>
@@ -347,8 +363,10 @@
                     <div class="room-price">$249<small>/night</small></div>
                     {% if user.is_authenticated and user.role_type in 'staff,admin' %}
                         <a href="{% url 'rooms:index' %}" class="book-btn">Manage Room</a>
+                    {% elif user.is_authenticated %}
+                        <a href="{% url 'booking:index' %}" class="book-btn">Book Now</a>
                     {% else %}
-                        <button class="book-btn" onclick="alert('Sign in to book')">Book Now</button>
+                        <a href="{% url 'accounts:login' %}" class="book-btn">Book Now</a>
                     {% endif %}
                 </div>
             </div>
@@ -365,8 +383,10 @@
                     <div class="room-price">$499<small>/night</small></div>
                     {% if user.is_authenticated and user.role_type in 'staff,admin' %}
                         <a href="{% url 'rooms:index' %}" class="book-btn">Manage Room</a>
+                    {% elif user.is_authenticated %}
+                        <a href="{% url 'booking:index' %}" class="book-btn">Book Now</a>
                     {% else %}
-                        <button class="book-btn" onclick="alert('Sign in to book')">Book Now</button>
+                        <a href="{% url 'accounts:login' %}" class="book-btn">Book Now</a>
                     {% endif %}
                 </div>
             </div>

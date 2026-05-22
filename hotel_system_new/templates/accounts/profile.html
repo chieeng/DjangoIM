@@ -48,7 +48,7 @@
 
                         <hr>
 
-                        <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+                        <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary">Edit Profile</a>
                     </div>
                 </div>
 
@@ -58,16 +58,16 @@
                     </div>
                     <div class="card-body">
                         <div class="list-group">
-                            <a href="{% url 'reservation_list' %}" class="list-group-item list-group-item-action">
+                            <a href="{% url 'reservations:reservation_list' %}" class="list-group-item list-group-item-action">
                                 📅 My Reservations
                             </a>
-                            <a href="{% url 'invoice_list' %}" class="list-group-item list-group-item-action">
+                            <a href="{% url 'billing:invoice_list' %}" class="list-group-item list-group-item-action">
                                 📋 Invoices
                             </a>
-                            <a href="{% url 'payment_history' %}" class="list-group-item list-group-item-action">
+                            <a href="{% url 'billing:payment_history' %}" class="list-group-item list-group-item-action">
                                 💳 Payment History
                             </a>
-                            <a href="{% url 'room_list' %}" class="list-group-item list-group-item-action">
+                            <a href="{% url 'rooms:room_list' %}" class="list-group-item list-group-item-action">
                                 🏨 Browse Rooms
                             </a>
                         </div>

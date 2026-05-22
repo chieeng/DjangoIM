@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Hotel Management System{% endblock %}
+
+{% block content %}
+<style>
+    .home-shell {
+        padding: 36px 0 48px;
+    }
+
+    .home-hero {
+        background: linear-gradient(135deg, #f6efe4 0%, #ffffff 55%, #ebf2ff 100%);
+        border-radius: 24px;
+        padding: 32px;
+        box-shadow: 0 18px 38px rgba(20, 41, 74, 0.08);
+        margin-bottom: 28px;
+    }
+
+    .home-title {
+        color: #1a2e52;
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .home-subtitle {
+        color: #607089;
+        margin-bottom: 0;
+    }
+
+    .home-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 24px;
+    }
+
+    .action-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 18px;
+    }
+
+    .action-card,
+    .session-card {
+        background: #fff;
+        border-radius: 22px;
+        padding: 24px;
+        box-shadow: 0 16px 36px rgba(20, 41, 74, 0.08);
+        border: 1px solid #edf1f6;
+    }
+
+    .action-card h2,
+    .session-card h2 {
+        font-size: 1.2rem;
+        color: #1a2e52;
+        margin-bottom: 10px;
+    }
+
+    .action-card p,
+    .session-card p,
+    .session-card li {
+        color: #66768c;
+    }
+
+    .session-card ul {
+        padding-left: 18px;
+        margin: 0;
+    }
+
+    .btn-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+    }
+
+    @media (max-width: 900px) {
+        .home-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="home-shell">
+    <section class="home-hero">
+        <h1 class="home-title">Home Page</h1>
+        <p class="home-subtitle">
+            Welcome, {{ session_user_name }}. Use the options below to manage your account and reservation records.
+        </p>
+    </section>
+
+    <div class="home-grid">
+        <section class="action-grid">
+            <article class="action-card">
+                <h2>Edit Profile</h2>
+                <p>Update your address, ID details, and other account information.</p>
+                <div class="btn-row">
+                    <a href="{% url 'common:edit_profile' %}" class="btn btn-primary">Open Edit Profile</a>
+                </div>
+            </article>
+
+            <article class="action-card">
+                <h2>Add New Record</h2>
+                <p>Create a new booking record and save it to your personal booking list.</p>
+                <div class="btn-row">
+                    <a href="{% url 'common:add_record' %}" class="btn btn-primary">Add New Record</a>
+                    <a href="{% url 'booking:index' %}" class="btn btn-outline-dark">View Booking List</a>
+                </div>
+            </article>
+
+            <article class="action-card">
+                <h2>Log Off</h2>
+                <p>End the current session securely and return to the sign-in page.</p>
+                <div class="btn-row">
+                    <a href="{% url 'common:logoff' %}" class="btn btn-danger">Log Off</a>
+                </div>
+            </article>
+        </section>
+
+        <aside class="session-card">
+            <h2>Session Details</h2>
+            <ul>
+                <li><strong>Signed in as:</strong> {{ session_user_name }}</li>
+                <li><strong>Login time:</strong> {{ session_login_time|default:"Not available" }}</li>
+                <li><strong>Last activity:</strong> {{ session_last_activity|default:"Not available" }}</li>
+            </ul>
+        </aside>
+    </div>
+</div>
+{% endblock %}
