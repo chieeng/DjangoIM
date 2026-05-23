@@ -32,17 +32,23 @@ class Service(models.Model):
 
 
 class ServiceRequest(models.Model):
-    """Service Request model"""
+    """Service Request — ERD: request_ID, request_date, quantity, status, notes."""
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
         ('completed', 'Completed'),
         ('cancelled', 'Cancelled'),
     ]
-    
+
     request_id = models.AutoField(primary_key=True)
-    service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    request_date = models.DateField(auto_now_add=True)
+    service = models.ForeignKey(
+        Service,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='service_requests',
+    )
+    request_date = models.DateField()
     quantity = models.IntegerField(default=1)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     notes = models.TextField(blank=True)
@@ -50,6 +56,14 @@ class ServiceRequest(models.Model):
     class Meta:
         verbose_name = 'Service Request'
         verbose_name_plural = 'Service Requests'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['service', 'request_date', 'quantity', 'status'],
+                name='unique_service_request_per_service_date_qty_status',
+            ),
+        ]
 
     def __str__(self):
-        return f"Service Request {self.request_id} - {self.service.service_name}"
+        if self.service_id:
+            return f"Service Request {self.request_id} - {self.service.service_name}"
+        return f"Service Request {self.request_id} - {self.request_date}"

@@ -36,7 +36,22 @@ class ServiceCategoryForm(forms.ModelForm):
 class ServiceRequestForm(forms.ModelForm):
     class Meta:
         model = ServiceRequest
-        fields = '__all__'
+        fields = ['service', 'request_date', 'quantity', 'status', 'notes']
+        labels = {
+            'service': 'Service ID',
+        }
+        widgets = {
+            'service': forms.Select(attrs={'class': 'form-control'}),
+            'request_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['service'].required = True
+        self.fields['service'].queryset = Service.objects.order_by('service_name')
 
     def clean(self):
         cleaned_data = super().clean()
@@ -44,9 +59,8 @@ class ServiceRequestForm(forms.ModelForm):
         request_date = cleaned_data.get('request_date')
         quantity = cleaned_data.get('quantity')
         status = cleaned_data.get('status')
-        notes = cleaned_data.get('notes', '')
 
-        if not service:
+        if not service or not request_date:
             return cleaned_data
 
         qs = ServiceRequest.objects.filter(
@@ -54,10 +68,11 @@ class ServiceRequestForm(forms.ModelForm):
             request_date=request_date,
             quantity=quantity,
             status=status,
-            notes=notes,
         )
         if self.instance.pk:
             qs = qs.exclude(pk=self.instance.pk)
         if qs.exists():
-            raise ValidationError('This service request already exists.')
+            raise ValidationError(
+                'A service request with this service, date, quantity, and status already exists.'
+            )
         return cleaned_data
