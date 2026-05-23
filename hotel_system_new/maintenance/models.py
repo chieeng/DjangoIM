@@ -23,7 +23,6 @@ class MaintenanceRequest(models.Model):
         null=True,
         blank=True,
         related_name='maintenance_requests',
-        help_text='Optional link: one housekeeping task may have many maintenance requests.',
     )
     issue_description = models.TextField()
     report_date = models.DateField(auto_now_add=True)
