@@ -14,9 +14,10 @@
                     <tr>
                         <th>Request ID</th>
                         <th>Room</th>
-                        <th>Priority</th>
+                        <th>Housekeeping</th>
                         <th>Status</th>
-                        <th>Date</th>
+                        <th>Report Date</th>
+                        <th>Resolved Date</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -24,9 +25,10 @@
                     <tr>
                         <td>{{ request.maintenance_id }}</td>
                         <td>{{ request.room.room_number }}</td>
-                        <td><span class="badge bg-danger">{{ request.get_priority_display }}</span></td>
+                        <td>{{ request.housekeeping.housekeeping_id|default:"—" }}</td>
                         <td><span class="badge bg-warning">{{ request.get_status_display }}</span></td>
                         <td>{{ request.report_date|date:"M d, Y" }}</td>
+                        <td>{{ request.resolved_date|date:"M d, Y"|default:"—" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

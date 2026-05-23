@@ -24,11 +24,11 @@
             <tr>
                 <th>ID</th>
                 <th>Room</th>
-                <th>Assigned To</th>
+                <th>Housekeeping</th>
                 <th>Issue</th>
                 <th>Status</th>
-                <th>Priority</th>
                 <th>Report Date</th>
+                <th>Resolved Date</th>
             </tr>
         </thead>
         <tbody>
@@ -36,11 +36,11 @@
             <tr>
                 <td>{{ request.maintenance_id }}</td>
                 <td>{{ request.room }}</td>
-                <td>{{ request.assigned_to.username|default:"Unassigned" }}</td>
+                <td>{{ request.housekeeping.housekeeping_id|default:"—" }}</td>
                 <td>{{ request.issue_description|truncatewords:10 }}</td>
                 <td>{{ request.get_status_display }}</td>
-                <td>{{ request.get_priority_display }}</td>
                 <td>{{ request.report_date }}</td>
+                <td>{{ request.resolved_date|default:"—" }}</td>
             </tr>
             {% endfor %}
         </tbody>
