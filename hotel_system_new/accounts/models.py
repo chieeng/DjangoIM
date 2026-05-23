@@ -32,6 +32,11 @@ class CustomUser(AbstractUser):
         verbose_name = 'User'
         verbose_name_plural = 'Users'
 
+    @property
+    def can_manage_hotel(self):
+        """Staff, admin, or Django superuser can access management areas."""
+        return self.role_type in ('staff', 'admin') or self.is_superuser
+
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Services Dashboard - Hotel Management System{% endblock %}
+
+{% block content %}
+<div class="py-4">
+    <div class="p-4 mb-4 rounded text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <h1 class="fw-bold mb-1">Services Dashboard</h1>
+        <p class="mb-0 opacity-75">Manage services, categories, and requests</p>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted text-uppercase small mb-1">Total Services</p>
+                    <h2 class="fw-bold text-primary mb-0">{{ total_services }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted text-uppercase small mb-1">Categories</p>
+                    <h2 class="fw-bold text-primary mb-0">{{ total_categories }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted text-uppercase small mb-1">Pending Requests</p>
+                    <h2 class="fw-bold text-warning mb-0">{{ pending_requests }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="h5 fw-bold mb-3">Quick Actions</h2>
+    <div class="row g-3 mb-5">
+        <div class="col-md-4">
+            <a href="{% url 'services:add_service' %}" class="card shadow-sm text-decoration-none text-dark h-100">
+                <div class="card-body text-center">
+                    <div class="fs-2 mb-2">➕</div>
+                    <strong>Add Service</strong>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'services:add_service_category' %}" class="card shadow-sm text-decoration-none text-dark h-100">
+                <div class="card-body text-center">
+                    <div class="fs-2 mb-2">🏷️</div>
+                    <strong>Add Category</strong>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'services:service_list' %}" class="card shadow-sm text-decoration-none text-dark h-100">
+                <div class="card-body text-center">
+                    <div class="fs-2 mb-2">📋</div>
+                    <strong>View Public List</strong>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <h2 class="h5 fw-bold mb-3">Recent Service Requests</h2>
+    {% if recent_requests %}
+    <div class="table-responsive card shadow-sm">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Service</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in recent_requests %}
+                <tr>
+                    <td>{{ req.request_id }}</td>
+                    <td>{{ req.service.service_name }}</td>
+                    <td>{{ req.request_date|date:"M d, Y" }}</td>
+                    <td><span class="badge bg-secondary">{{ req.get_status_display }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">No service requests yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -15,7 +15,7 @@ def staff_or_admin_required(view_func):
     def wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect('accounts:login')
-        if request.user.role_type not in ['staff', 'admin']:
+        if not request.user.can_manage_hotel:
             messages.error(request, 'You do not have permission to access the rooms management system. Only staff and administrators can access this area.')
             return redirect('common:index')
         return view_func(request, *args, **kwargs)
@@ -25,7 +25,7 @@ def staff_or_admin_required(view_func):
 def index(request):
     """Rooms app dashboard - Staff/Admin only"""
     # Restrict to staff and admin only
-    if request.user.is_authenticated and request.user.role_type not in ['staff', 'admin']:
+    if request.user.is_authenticated and not request.user.can_manage_hotel:
         messages.error(request, 'You do not have permission to access the rooms management system.')
         return redirect('common:index')
     
@@ -73,7 +73,7 @@ def room_list(request):
         rooms = rooms.filter(status=request.GET.get('status'))
     else:
         # By default, show only available rooms to guests
-        if not (request.user.is_authenticated and request.user.role_type in ['staff', 'admin']):
+        if not (request.user.is_authenticated and request.user.can_manage_hotel):
             rooms = rooms.filter(status='available')
     
     if request.GET.get('min_price'):
