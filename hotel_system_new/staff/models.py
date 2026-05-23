@@ -23,10 +23,9 @@ class StaffAssignment(models.Model):
         blank=True,
         related_name='staff_assignments',
     )
-    assigned_date = models.DateField(auto_now_add=True)
+    assigned_date = models.DateField()
     completion_date = models.DateField(null=True, blank=True)
     assignment_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='assigned')
-    order = models.CharField(max_length=255, blank=True)
 
     class Meta:
         verbose_name = 'Staff Assignment'

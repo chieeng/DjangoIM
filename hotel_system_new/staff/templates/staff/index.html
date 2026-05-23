@@ -24,9 +24,10 @@
             <tr>
                 <th>ID</th>
                 <th>Staff</th>
+                <th>Maintenance Request</th>
                 <th>Assigned Date</th>
+                <th>Completion Date</th>
                 <th>Status</th>
-                <th>Order</th>
             </tr>
         </thead>
         <tbody>
@@ -34,9 +35,10 @@
             <tr>
                 <td>{{ assignment.staff_assignment_id }}</td>
                 <td>{{ assignment.staff.username }}</td>
+                <td>{{ assignment.maintenance_request|default:"—" }}</td>
                 <td>{{ assignment.assigned_date }}</td>
+                <td>{{ assignment.completion_date|default:"—" }}</td>
                 <td>{{ assignment.get_assignment_status_display }}</td>
-                <td>{{ assignment.order }}</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -13,18 +13,20 @@
                 <thead class="table-dark">
                     <tr>
                         <th>Assignment ID</th>
+                        <th>Maintenance Request</th>
                         <th>Assigned Date</th>
+                        <th>Completion Date</th>
                         <th>Status</th>
-                        <th>Order</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for assignment in assignments %}
                     <tr>
                         <td>{{ assignment.staff_assignment_id }}</td>
+                        <td>{{ assignment.maintenance_request|default:"—" }}</td>
                         <td>{{ assignment.assigned_date|date:"M d, Y" }}</td>
+                        <td>{% if assignment.completion_date %}{{ assignment.completion_date|date:"M d, Y" }}{% else %}—{% endif %}</td>
                         <td><span class="badge bg-primary">{{ assignment.get_assignment_status_display }}</span></td>
-                        <td>{{ assignment.order|truncatewords:5 }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
