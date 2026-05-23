@@ -23,6 +23,12 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Review'
         verbose_name_plural = 'Reviews'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['customer', 'room'],
+                name='unique_review_per_customer_room',
+            ),
+        ]
 
     def __str__(self):
         return f"Review {self.review_id} - {self.customer.username} ({self.rating} stars)"

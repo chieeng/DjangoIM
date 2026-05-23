@@ -31,6 +31,12 @@ class MaintenanceRequest(models.Model):
     class Meta:
         verbose_name = 'Maintenance Request'
         verbose_name_plural = 'Maintenance Requests'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['room', 'report_date'],
+                name='unique_maintenance_room_per_report_date',
+            ),
+        ]
 
     def __str__(self):
         return f"Maintenance {self.maintenance_id} - {self.room} ({self.get_status_display()})"

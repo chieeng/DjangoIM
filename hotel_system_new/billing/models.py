@@ -62,7 +62,7 @@ class Payment(models.Model):
 class Discount(models.Model):
     """Discount model"""
     discount_id = models.AutoField(primary_key=True)
-    discount_name = models.CharField(max_length=100)
+    discount_name = models.CharField(max_length=100, unique=True)
     percentage = models.DecimalField(max_digits=5, decimal_places=2)
     start_date = models.DateField()
     end_date = models.DateField()

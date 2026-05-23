@@ -21,6 +21,12 @@ class Housekeeping(models.Model):
     class Meta:
         verbose_name = 'Housekeeping'
         verbose_name_plural = 'Housekeeping Tasks'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['room', 'cleaning_date'],
+                name='unique_housekeeping_room_per_date',
+            ),
+        ]
 
     def __str__(self):
         return f"Housekeeping {self.housekeeping_id} - {self.room} ({self.get_status_display()})"

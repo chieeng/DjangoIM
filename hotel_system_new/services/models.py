@@ -4,7 +4,7 @@ from django.db import models
 class ServiceCategory(models.Model):
     """Service Category model"""
     service_category_id = models.AutoField(primary_key=True)
-    category_name = models.CharField(max_length=100)
+    category_name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
 
     class Meta:
@@ -18,7 +18,7 @@ class ServiceCategory(models.Model):
 class Service(models.Model):
     """Service model"""
     service_id = models.AutoField(primary_key=True)
-    service_name = models.CharField(max_length=100)
+    service_name = models.CharField(max_length=100, unique=True)
     category = models.ForeignKey(ServiceCategory, on_delete=models.SET_NULL, null=True)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
