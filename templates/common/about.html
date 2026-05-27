@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}About - Hotel Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+        color: white;
+        padding: 3rem 0;
+        margin-bottom: 3rem;
+        border-bottom: 3px solid var(--accent-color);
+    }
+
+    .page-header h1 {
+        color: white;
+        margin-bottom: 0;
+    }
+
+    .mission-section {
+        background-color: var(--primary-50);
+        padding: 2rem;
+        border-radius: var(--radius-lg);
+        border-left: 4px solid var(--primary-light);
+        margin: 2rem 0;
+    }
+
+    .values-list {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .values-list li {
+        padding: 0.75rem 0;
+        padding-left: 2rem;
+        position: relative;
+        color: var(--text-primary);
+    }
+
+    .values-list li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--accent-color);
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .highlight {
+        color: var(--primary-light);
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="mb-0">
+            <i class="fas fa-info-circle me-2"></i>About Our Hotel
+        </h1>
+        <p class="text-white-50 mt-2">Discover the heart of our hospitality</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8">
+            <p class="lead text-primary">
+                <i class="fas fa-quote-left me-2"></i>
+                Welcome to our premier hotel management system. We are dedicated to providing 
+                <span class="highlight">exceptional hospitality</span> and unforgettable experiences for our guests.
+            </p>
+
+            <div class="mission-section">
+                <h3 class="mb-3">
+                    <i class="fas fa-bullseye me-2 text-accent"></i>Our Mission
+                </h3>
+                <p class="mb-0">
+                    To deliver world-class hospitality through innovative technology and personalized service, 
+                    ensuring every guest leaves with cherished memories and a desire to return.
+                </p>
+            </div>
+
+            <div class="mt-5">
+                <h3 class="mb-4">
+                    <i class="fas fa-heart me-2 text-accent"></i>Our Core Values
+                </h3>
+                <ul class="values-list">
+                    <li>Excellence in service delivery</li>
+                    <li>Innovation and continuous improvement</li>
+                    <li>Guest satisfaction as our priority</li>
+                    <li>Integrity and transparency</li>
+                    <li>Sustainable and responsible practices</li>
+                </ul>
+            </div>
+
+            <div class="mt-5 p-4 bg-light rounded border-left-primary">
+                <h4 class="mb-3">
+                    <i class="fas fa-handshake me-2 text-primary"></i>Why Choose Us?
+                </h4>
+                <p>
+                    With years of experience in hospitality management, our dedicated team ensures 
+                    that every guest receives personalized attention and premium service. We combine 
+                    cutting-edge technology with warm, human touch to create unforgettable experiences.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-top-accent h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-users display-4 text-accent mb-3"></i>
+                    <h5 class="card-title">Expert Team</h5>
+                    <p class="card-text">Professional staff dedicated to your comfort and satisfaction.</p>
+                </div>
+            </div>
+
+            <div class="card border-top-accent h-100 mt-4">
+                <div class="card-body text-center">
+                    <i class="fas fa-star display-4 text-accent mb-3"></i>
+                    <h5 class="card-title">Quality Service</h5>
+                    <p class="card-text">Committed to delivering the highest standards in hospitality.</p>
+                </div>
+            </div>
+
+            <div class="card border-top-accent h-100 mt-4">
+                <div class="card-body text-center">
+                    <i class="fas fa-shield-alt display-4 text-accent mb-3"></i>
+                    <h5 class="card-title">Trusted Partner</h5>
+                    <p class="card-text">Your safety and security are our top priorities.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

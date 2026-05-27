@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Room {{ room.room_number }} - Hotel Management System{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5">
+                <div class="card shadow-lg border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h4 class="mb-0">&#128465; Confirm Delete</h4>
+                    </div>
+                    <div class="card-body p-5 text-center">
+                        <p class="fs-5 mb-1">You are about to permanently delete:</p>
+                        <p class="fs-4 fw-bold text-danger mb-1">Room {{ room.room_number }}</p>
+                        <p class="text-muted mb-4">
+                            Floor {{ room.floor_number }} &bull;
+                            {{ room.room_type.type_name|default:"No type" }} &bull;
+                            {{ room.get_status_display }}
+                        </p>
+                        <div class="alert alert-warning text-start">
+                            <strong>Warning:</strong> This will also delete all room assignments linked to this room. This action cannot be undone.
+                        </div>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-danger btn-lg">Yes, Delete Room</button>
+                                <a href="{% url 'rooms:index' %}" class="btn btn-secondary btn-lg">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

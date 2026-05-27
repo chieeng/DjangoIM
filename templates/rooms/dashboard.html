@@ -1,0 +1,518 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 0;
+        margin-bottom: 40px;
+        border-radius: 10px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 2.2rem;
+        margin-bottom: 5px;
+        font-weight: 700;
+    }
+
+    .dashboard-header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-left: 5px solid #f39c12;
+    }
+
+    .stat-card.available {
+        border-left-color: #28a745;
+    }
+
+    .stat-card.occupied {
+        border-left-color: #dc3545;
+    }
+
+    .stat-card.maintenance {
+        border-left-color: #ffc107;
+    }
+
+    .stat-card.reserved {
+        border-left-color: #ff6b6b;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    .stat-value {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #1e3c72;
+    }
+
+    .stat-change {
+        font-size: 0.85rem;
+        color: #28a745;
+        margin-top: 8px;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        color: #1e3c72;
+        margin-bottom: 25px;
+        font-weight: 700;
+        padding-bottom: 15px;
+        border-bottom: 3px solid #f39c12;
+    }
+
+    .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .action-card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        text-decoration: none;
+        color: #333;
+        transition: all 0.3s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        color: #333;
+        text-decoration: none;
+    }
+
+    .action-icon {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    .action-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+        font-size: 1rem;
+    }
+
+    .action-desc {
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    .table-section {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 40px;
+    }
+
+    .table-section table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table-section thead {
+        background: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table-section th {
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        color: #1e3c72;
+    }
+
+    .table-section td {
+        padding: 15px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .table-section tbody tr:hover {
+        background: #f8f9fa;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .badge-available {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .badge-occupied {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .badge-maintenance {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .badge-reserved {
+        background: #f5c6cb;
+        color: #721c24;
+    }
+
+    .badge-cleaning {
+        background: #bee5eb;
+        color: #0c5460;
+    }
+
+    .quick-actions {
+        display: flex;
+        gap: 5px;
+    }
+
+    .quick-actions a, .quick-actions button {
+        padding: 5px 10px;
+        font-size: 0.85rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .quick-actions .btn-view {
+        background: #e9ecef;
+        color: #333;
+    }
+
+    .quick-actions .btn-edit {
+        background: #667eea;
+        color: white;
+    }
+
+    .quick-actions .btn-delete {
+        background: #dc3545;
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        background: white;
+        border-radius: 10px;
+    }
+
+    .empty-state h4 {
+        color: #1e3c72;
+        margin-bottom: 10px;
+    }
+
+    .empty-state p {
+        color: #666;
+    }
+
+    .welcome-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+
+    .welcome-box h4 {
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="dashboard-header">
+    <div class="container">
+        <h1>📊 Staff Dashboard</h1>
+        <p>Manage rooms, reservations, and hotel operations</p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Welcome Message -->
+    {% if user.is_authenticated %}
+    <div class="welcome-box">
+        <h4>Welcome, {{ user.get_full_name|default:user.username }}!</h4>
+        <p>{{ user.get_role_type_display }} • Last login: {{ user.last_login|date:"M d, Y H:i"|default:"Never" }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Key Statistics -->
+    <h2 class="section-title">📈 Room Statistics</h2>
+    <div class="stats-grid">
+        <div class="stat-card available">
+            <div class="stat-label">Available Rooms</div>
+            <div class="stat-value">{{ available_rooms }}</div>
+            <div class="stat-change">{{ available_rooms }}/{{ total_rooms }} ready for guests</div>
+        </div>
+
+        <div class="stat-card occupied">
+            <div class="stat-label">Occupied Rooms</div>
+            <div class="stat-value">{{ occupied_rooms }}</div>
+            <div class="stat-change">Occupancy: {{ occupancy_rate|floatformat:1 }}%</div>
+        </div>
+
+        <div class="stat-card maintenance">
+            <div class="stat-label">Under Maintenance</div>
+            <div class="stat-value">{{ maintenance_rooms }}</div>
+            <div class="stat-change">Requires attention</div>
+        </div>
+
+        <div class="stat-card reserved">
+            <div class="stat-label">Reserved Rooms</div>
+            <div class="stat-value">{{ reserved_rooms }}</div>
+            <div class="stat-change">Upcoming bookings</div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <h2 class="section-title">⚡ Quick Actions</h2>
+    <div class="actions-grid">
+        <a href="{% url 'rooms:add_room' %}" class="action-card">
+            <div class="action-icon">➕</div>
+            <div class="action-title">Add Room</div>
+            <div class="action-desc">Create new room</div>
+        </a>
+
+        <a href="{% url 'rooms:add_room_type' %}" class="action-card">
+            <div class="action-icon">🏷️</div>
+            <div class="action-title">Add Room Type</div>
+            <div class="action-desc">Define room category</div>
+        </a>
+
+        <a href="{% url 'rooms:add_reservation' %}" class="action-card">
+            <div class="action-icon">📅</div>
+            <div class="action-title">New Reservation</div>
+            <div class="action-desc">Create booking</div>
+        </a>
+
+        <a href="{% url 'rooms:add_room_assignment' %}" class="action-card">
+            <div class="action-icon">🔐</div>
+            <div class="action-title">Room Assignment</div>
+            <div class="action-desc">Assign guest to room</div>
+        </a>
+
+        <a href="{% url 'rooms:room_list' %}" class="action-card">
+            <div class="action-icon">🔍</div>
+            <div class="action-title">Browse Rooms</div>
+            <div class="action-desc">View all rooms</div>
+        </a>
+
+        <a href="{% url 'rooms:room_type_list' %}" class="action-card">
+            <div class="action-icon">&#128196;</div>
+            <div class="action-title">Room Types</div>
+            <div class="action-desc">View all types</div>
+        </a>
+
+        <a href="{% url 'common:index' %}" class="action-card">
+            <div class="action-icon">&#127968;</div>
+            <div class="action-title">Home</div>
+            <div class="action-desc">Back to landing</div>
+        </a>
+    </div>
+
+    <!-- Pending Reservations Queue -->
+    <h2 class="section-title">⏳ Pending Reservations
+        {% if pending_with_priority %}
+        <span style="font-size:1rem; font-weight:400; color:#666; margin-left:10px;">
+            {{ pending_with_priority|length }} awaiting confirmation
+        </span>
+        {% endif %}
+    </h2>
+    {% if pending_with_priority %}
+    <div class="table-section">
+        <table>
+            <thead>
+                <tr>
+                    <th>Priority</th>
+                    <th>ID</th>
+                    <th>Guest</th>
+                    <th>Room</th>
+                    <th>Check-In</th>
+                    <th>Check-Out</th>
+                    <th>Guests</th>
+                    <th>Reserved At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation, priority in pending_with_priority %}
+                <tr {% if priority == 1 %}style="background:#f0fff4;"{% endif %}>
+                    <td>
+                        {% if priority == 1 %}
+                            <span class="badge" style="background:#28a745;color:white;">
+                                #1 &nbsp;&#9733;
+                            </span>
+                        {% else %}
+                            <span class="badge" style="background:#dee2e6;color:#555;">
+                                #{{ priority }}
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>#{{ reservation.reservation_id }}</td>
+                    <td>{{ reservation.customer.get_full_name|default:reservation.customer.username }}</td>
+                    <td>
+                        {% if reservation.room %}
+                            <strong>Room {{ reservation.room.room_number }}</strong>
+                            <small style="display:block;color:#888;">{{ reservation.room.room_type.type_name|default:"" }}</small>
+                        {% else %}
+                            <span style="color:#aaa;">—</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ reservation.check_in_date|date:"M d, Y" }}</td>
+                    <td>{{ reservation.check_out_date|date:"M d, Y" }}</td>
+                    <td>{{ reservation.number_of_guests }}</td>
+                    <td style="font-size:0.85rem;color:#666;">{{ reservation.reservation_date|date:"M d, Y" }}</td>
+                    <td>
+                        <div class="quick-actions">
+                            {% if priority == 1 %}
+                            <form method="post" action="{% url 'reservations:confirm_reservation' reservation.pk %}"
+                                  onsubmit="return confirm('Confirm reservation #{{ reservation.reservation_id }} for {{ reservation.customer.get_full_name|default:reservation.customer.username }}? Other pending reservations for this room will be cancelled.');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-edit" style="background:#28a745;">Confirm</button>
+                            </form>
+                            {% else %}
+                            <span style="color:#aaa;font-size:0.8rem;">Queued</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p style="margin-top:12px;font-size:0.85rem;color:#888;">
+            <strong>&#9733; Priority #1</strong> = earliest reservation per room. Confirming it automatically cancels lower-priority reservations for the same room.
+        </p>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h4>No Pending Reservations</h4>
+        <p>All reservations have been processed.</p>
+    </div>
+    {% endif %}
+
+    <!-- Recent Activity -->
+    <h2 class="section-title">📋 Recent Activity</h2>
+    {% if recent_reservations %}
+    <div class="table-section">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Guest</th>
+                    <th>Room</th>
+                    <th>Check-In</th>
+                    <th>Check-Out</th>
+                    <th>Status</th>
+                    <th>Guests</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in recent_reservations %}
+                <tr>
+                    <td>#{{ reservation.reservation_id }}</td>
+                    <td>{{ reservation.customer.get_full_name|default:reservation.customer.username }}</td>
+                    <td>{% if reservation.room %}Room {{ reservation.room.room_number }}{% else %}—{% endif %}</td>
+                    <td>{{ reservation.check_in_date|date:"M d, Y" }}</td>
+                    <td>{{ reservation.check_out_date|date:"M d, Y" }}</td>
+                    <td><span class="badge badge-{{ reservation.reservation_status }}">{{ reservation.reservation_status|title }}</span></td>
+                    <td>{{ reservation.number_of_guests }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h4>No Recent Activity</h4>
+        <p>No confirmed or processed reservations yet.</p>
+    </div>
+    {% endif %}
+
+    <!-- Room Overview Table -->
+    <h2 class="section-title">🏨 Room Overview</h2>
+    {% if all_rooms %}
+    <div class="table-section">
+        <table>
+            <thead>
+                <tr>
+                    <th>Room #</th>
+                    <th>Floor</th>
+                    <th>Type</th>
+                    <th>Capacity</th>
+                    <th>Price/Night</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for room in all_rooms|slice:":10" %}
+                <tr>
+                    <td><strong>{{ room.room_number }}</strong></td>
+                    <td>{{ room.floor_number }}</td>
+                    <td>{{ room.room_type.type_name }}</td>
+                    <td>{{ room.room_type.max_capacity }} guests</td>
+                    <td>${{ room.price_per_night|floatformat:2 }}</td>
+                    <td><span class="badge badge-{{ room.status }}">{{ room.get_status_display }}</span></td>
+                    <td>
+                        <div class="quick-actions">
+                            <a href="{% url 'rooms:room_detail' room.pk %}" class="btn-view">View</a>
+                            <a href="{% url 'rooms:edit_room' room.pk %}" class="btn-edit">Edit</a>
+                            <a href="{% url 'rooms:delete_room' room.pk %}" class="btn-delete">Delete</a>
+                        </div>
+                        <form method="post" action="{% url 'rooms:update_room_status' room.pk %}" class="mt-1 d-flex gap-1">
+                            {% csrf_token %}
+                            <select name="status" class="form-select form-select-sm" style="font-size:0.75rem;">
+                                {% for value, label in status_choices %}
+                                    <option value="{{ value }}" {% if room.status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-outline-secondary" style="font-size:0.75rem; white-space:nowrap;">Set</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p style="text-align: right; margin-top: 15px; color: #666; font-size: 0.9rem;">
+            Showing 10 of {{ total_rooms }} rooms • <a href="{% url 'rooms:room_list' %}" style="color: #667eea;">View All</a>
+        </p>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h4>No Rooms Available</h4>
+        <p>Create rooms from the Quick Actions section above.</p>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

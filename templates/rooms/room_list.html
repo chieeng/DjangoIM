@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}Rooms - Hotel Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+        color: white;
+        padding: 2.5rem 0;
+        margin-bottom: 2rem;
+        border-bottom: 3px solid var(--accent-color);
+    }
+
+    .page-header h1 {
+        color: white;
+        margin-bottom: 0;
+    }
+
+    .room-card {
+        height: 100%;
+        transition: all var(--transition-normal);
+        border: 1px solid var(--border-light);
+        border-top: 4px solid var(--primary-light);
+    }
+
+    .room-card:hover {
+        border-top-color: var(--accent-color);
+        transform: translateY(-8px);
+    }
+
+    .room-card img {
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .room-price {
+        font-size: 1.5rem;
+        color: var(--accent-color);
+        font-weight: 700;
+    }
+
+    .room-details {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="mb-0">
+            <i class="fas fa-door-open me-2"></i>Available Rooms
+        </h1>
+        <p class="text-white-50 mt-2">Find your perfect accommodation</p>
+    </div>
+</div>
+
+<div class="container">
+    {% if rooms %}
+        <div class="row g-4">
+            {% for room in rooms %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card room-card h-100">
+                    <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300" class="card-img-top" alt="Room {{ room.room_number }}">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-bed me-2"></i>Room {{ room.room_number }}
+                        </h5>
+                        <div class="room-details mb-3">
+                            <div class="mb-2">
+                                <i class="fas fa-layer-group text-primary"></i>
+                                <span class="ms-2">Floor {{ room.floor_number }}</span>
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-door-closed text-primary"></i>
+                                <span class="ms-2">{{ room.room_type.type_name }}</span>
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-users text-primary"></i>
+                                <span class="ms-2">Up to {{ room.room_type.max_capacity }} guests</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="room-price">${{ room.price_per_night }}<small>/night</small></div>
+                            <span class="badge status-{{ room.get_status_display|lower }}">{{ room.get_status_display }}</span>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-top">
+                        <a href="{% url 'room_detail' room.room_id %}" class="btn btn-primary w-100">
+                            <i class="fas fa-eye me-2"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info alert-lg text-center">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>No rooms available at the moment.</strong>
+            <p class="mb-0 mt-2">Please check back later or contact our support team.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Reviews - Hotel Management System{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <div class="container">
+        <h1 class="mb-4 fw-bold">Guest Reviews</h1>
+        
+        {% if reviews %}
+        <div class="row">
+            {% for review in reviews %}
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-grow-1">
+                                <h5 class="card-title">{{ review.customer.first_name }} (Room {{ review.room.room_number }})</h5>
+                                <div class="mb-2">
+                                    {% for i in "x"|rjust:"5" %}
+                                        {% if forloop.counter <= review.rating %}
+                                        ⭐
+                                        {% else %}
+                                        ☆
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <p class="card-text">{{ review.comment }}</p>
+                                <small class="text-muted">{{ review.review_date|date:"M d, Y" }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">No reviews yet.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

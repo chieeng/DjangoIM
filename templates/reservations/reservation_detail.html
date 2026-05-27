@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Reservation #{{ reservation.reservation_id }} - Hotel Management System{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+
+                <div class="d-flex align-items-center mb-4">
+                    <a href="{% url 'reservations:reservation_list' %}" class="btn btn-outline-secondary me-3">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    <h1 class="fw-bold mb-0">Reservation #{{ reservation.reservation_id }}</h1>
+                </div>
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-calendar-check me-2 text-primary"></i>Reservation Details</h5>
+                        {% if reservation.reservation_status == 'pending' %}
+                            <span class="badge bg-warning text-dark fs-6">Pending</span>
+                        {% elif reservation.reservation_status == 'confirmed' %}
+                            <span class="badge bg-success fs-6">Confirmed</span>
+                        {% elif reservation.reservation_status == 'checked_in' %}
+                            <span class="badge bg-primary fs-6">Checked In</span>
+                        {% elif reservation.reservation_status == 'checked_out' %}
+                            <span class="badge bg-secondary fs-6">Checked Out</span>
+                        {% elif reservation.reservation_status == 'cancelled' %}
+                            <span class="badge bg-danger fs-6">Cancelled</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body p-4">
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Room</div>
+                            <div class="col-sm-8 fw-semibold">
+                                {% if reservation.room %}
+                                    Room {{ reservation.room.room_number }}
+                                    {% if reservation.room.room_type %}
+                                        &mdash; {{ reservation.room.room_type.type_name }}
+                                    {% endif %}
+                                    <small class="text-muted d-block">Floor {{ reservation.room.floor_number }}</small>
+                                {% else %}
+                                    <span class="text-muted">Not assigned</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <hr class="my-2">
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Check-In</div>
+                            <div class="col-sm-8 fw-semibold">{{ reservation.check_in_date|date:"F d, Y" }}</div>
+                        </div>
+                        <hr class="my-2">
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Check-Out</div>
+                            <div class="col-sm-8 fw-semibold">{{ reservation.check_out_date|date:"F d, Y" }}</div>
+                        </div>
+                        <hr class="my-2">
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Duration</div>
+                            <div class="col-sm-8 fw-semibold">
+                                {{ reservation.check_in_date|timesince:reservation.check_out_date|cut:" ago" }}
+                                ({{ reservation.check_in_date }} &rarr; {{ reservation.check_out_date }})
+                            </div>
+                        </div>
+                        <hr class="my-2">
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Guests</div>
+                            <div class="col-sm-8 fw-semibold">{{ reservation.number_of_guests }}</div>
+                        </div>
+                        <hr class="my-2">
+
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Reserved On</div>
+                            <div class="col-sm-8 fw-semibold">{{ reservation.reservation_date|date:"F d, Y" }}</div>
+                        </div>
+
+                        {% if reservation.special_request %}
+                        <hr class="my-2">
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Special Request</div>
+                            <div class="col-sm-8">{{ reservation.special_request }}</div>
+                        </div>
+                        {% endif %}
+
+                        {% if reservation.room %}
+                        <hr class="my-2">
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Price/Night</div>
+                            <div class="col-sm-8 fw-semibold text-primary">${{ reservation.room.price_per_night|floatformat:2 }}</div>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="{% url 'reservations:reservation_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Reservations
+                    </a>
+                    {% if reservation.reservation_status in 'pending,confirmed' %}
+                    <form method="post" action="{% url 'reservations:cancel_reservation' reservation.pk %}"
+                          onsubmit="return confirm('Are you sure you want to cancel this reservation?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-times me-1"></i>Cancel Reservation
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

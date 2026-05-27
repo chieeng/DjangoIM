@@ -1,0 +1,447 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .rooms-header {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        padding: 40px 0;
+        margin-bottom: 40px;
+    }
+
+    .rooms-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .filter-section {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 40px;
+    }
+
+    .filter-section h3 {
+        color: #1e3c72;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    .filter-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .filter-row select, .filter-row input {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 0.95rem;
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .filter-buttons button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .filter-btn-search {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        color: white;
+        flex-grow: 1;
+    }
+
+    .filter-btn-search:hover {
+        transform: translateY(-2px);
+    }
+
+    .filter-btn-reset {
+        background: #e9ecef;
+        color: #666;
+    }
+
+    .filter-btn-reset:hover {
+        background: #dee2e6;
+    }
+
+    .rooms-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+
+    .room-card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .room-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .room-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .room-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+
+    .room-status {
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-available {
+        background: #28a745;
+        color: white;
+    }
+
+    .status-occupied {
+        background: #dc3545;
+        color: white;
+    }
+
+    .status-maintenance {
+        background: #ffc107;
+        color: #333;
+    }
+
+    .status-reserved {
+        background: #ff6b6b;
+        color: white;
+    }
+
+    .room-details {
+        padding: 20px;
+    }
+
+    .room-type {
+        color: #f39c12;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        margin-bottom: 10px;
+    }
+
+    .room-floor {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+
+    .room-specs {
+        display: flex;
+        gap: 15px;
+        margin: 15px 0;
+        padding: 15px 0;
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+    }
+
+    .spec-item {
+        flex: 1;
+        text-align: center;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .spec-icon {
+        font-size: 1.5rem;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .room-price {
+        font-size: 1.8rem;
+        color: #f39c12;
+        font-weight: 700;
+        margin: 15px 0;
+    }
+
+    .room-price small {
+        font-size: 0.85rem;
+        color: #999;
+    }
+
+    .room-amenities {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 15px 0;
+    }
+
+    .room-amenities h6 {
+        color: #1e3c72;
+        font-size: 0.85rem;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .amenity-list {
+        font-size: 0.9rem;
+        color: #666;
+        line-height: 1.8;
+    }
+
+    .room-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .room-actions button, .room-actions a {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.3s;
+        font-size: 0.95rem;
+    }
+
+    .btn-book {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        color: white;
+    }
+
+    .btn-book:hover {
+        transform: scale(1.02);
+    }
+
+    .btn-details {
+        background: #e9ecef;
+        color: #333;
+    }
+
+    .btn-details:hover {
+        background: #dee2e6;
+    }
+
+    .btn-manage {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-manage:hover {
+        transform: scale(1.02);
+    }
+
+    .no-rooms {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 10px;
+    }
+
+    .no-rooms h3 {
+        color: #1e3c72;
+        margin-bottom: 10px;
+    }
+
+    .no-rooms p {
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    .pagination {
+        text-align: center;
+        margin-top: 40px;
+    }
+
+    .page-count {
+        text-align: center;
+        color: #666;
+        margin: 20px 0;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="rooms-header">
+    <div class="container">
+        <h1>🏨 Available Rooms</h1>
+        <p>{{ total_rooms }} rooms available • Book your stay today</p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <h3>🔍 Filter Rooms</h3>
+        <form method="GET" action="">
+            <div class="filter-row">
+                <select name="room_type" id="room_type">
+                    <option value="">All Room Types</option>
+                    {% for room_type in room_types %}
+                        <option value="{{ room_type.id }}" {% if request.GET.room_type|stringformat:"s" == room_type.id|stringformat:"s" %}selected{% endif %}>
+                            {{ room_type.type_name }} ({{ room_type.price_per_night|floatformat:2 }}/night)
+                        </option>
+                    {% endfor %}
+                </select>
+
+                {% if user.is_authenticated and user.role_type in 'staff,admin' %}
+                <select name="status" id="status">
+                    <option value="">All Status</option>
+                    <option value="available" {% if request.GET.status == "available" %}selected{% endif %}>Available</option>
+                    <option value="occupied" {% if request.GET.status == "occupied" %}selected{% endif %}>Occupied</option>
+                    <option value="maintenance" {% if request.GET.status == "maintenance" %}selected{% endif %}>Maintenance</option>
+                    <option value="reserved" {% if request.GET.status == "reserved" %}selected{% endif %}>Reserved</option>
+                    <option value="cleaning" {% if request.GET.status == "cleaning" %}selected{% endif %}>Cleaning</option>
+                </select>
+                {% endif %}
+
+                <input type="number" name="min_price" placeholder="Min Price" value="{{ request.GET.min_price }}" min="0">
+                <input type="number" name="max_price" placeholder="Max Price" value="{{ request.GET.max_price }}" min="0">
+            </div>
+
+            <div class="filter-buttons">
+                <button type="submit" class="filter-btn-search">🔎 Search</button>
+                <a href="{% url 'rooms:room_list' %}" style="display: flex; align-items: center; text-decoration: none;">
+                    <button type="button" class="filter-btn-reset">Reset Filters</button>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Active Filters Display -->
+    {% if request.GET.room_type or request.GET.status or request.GET.min_price or request.GET.max_price %}
+    <div style="margin-bottom: 20px; padding: 15px; background: #e8f4f8; border-radius: 5px;">
+        <strong>Active Filters:</strong>
+        {% if request.GET.room_type %}<span style="margin-right: 10px;">Room Type: {{ request.GET.get_room_type_display }}</span>{% endif %}
+        {% if request.GET.status %}<span style="margin-right: 10px;">Status: {{ request.GET.status|title }}</span>{% endif %}
+        {% if request.GET.min_price %}<span style="margin-right: 10px;">Min: ${{ request.GET.min_price }}</span>{% endif %}
+        {% if request.GET.max_price %}<span>Max: ${{ request.GET.max_price }}</span>{% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Rooms Grid -->
+    {% if rooms %}
+        <div class="page-count">Showing {{ rooms|length }} of {{ total_rooms }} rooms</div>
+        
+        <div class="rooms-grid">
+            {% for room in rooms %}
+            <div class="room-card">
+                <!-- Room Header -->
+                <div class="room-header">
+                    <div class="room-number">Room {{ room.room_number }}</div>
+                    <div class="room-status status-{{ room.status }}">{{ room.status|title }}</div>
+                </div>
+
+                <!-- Room Details -->
+                <div class="room-details">
+                    <div class="room-type">{{ room.room_type.type_name }}</div>
+                    <div class="room-floor">📍 Floor {{ room.floor_number }}</div>
+
+                    <!-- Specs -->
+                    <div class="room-specs">
+                        <div class="spec-item">
+                            <span class="spec-icon">👥</span>
+                            {{ room.room_type.max_capacity }} Guests
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-icon">🏷️</span>
+                            {{ room.room_type.type_name }}
+                        </div>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="room-price">${{ room.price_per_night|floatformat:2 }}<small>/night</small></div>
+
+                    <!-- Amenities -->
+                    <div class="room-amenities">
+                        <h6>✨ Room Amenities</h6>
+                        <div class="amenity-list">
+                            ✓ Wi-Fi Access<br>
+                            ✓ Air Conditioning<br>
+                            ✓ Smart TV<br>
+                            ✓ Private Bathroom<br>
+                            ✓ Premium Bedding
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="room-actions">
+                        {% if user.is_authenticated and user.role_type in 'staff,admin' %}
+                            <a href="{% url 'rooms:room_detail' room.pk %}" class="btn-details">View Details</a>
+                            <a href="{% url 'rooms:edit_room' room.pk %}" class="btn-manage">Manage</a>
+                        {% elif user.is_authenticated %}
+                            <a href="{% url 'rooms:room_detail' room.pk %}" class="btn-details">View Details</a>
+                        {% else %}
+                            <a href="{% url 'rooms:room_detail' room.pk %}" class="btn-details">Details</a>
+                            <a href="{% url 'accounts:login' %}" class="btn-book">Login to Book</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav aria-label="Room pagination" class="pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    {% else %}
+        <div class="no-rooms">
+            <h3>No Rooms Available</h3>
+            <p>Sorry, no rooms match your current filters. Please try adjusting your search criteria.</p>
+            <a href="{% url 'rooms:room_list' %}" class="btn btn-primary">Clear Filters</a>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Hotel Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+        color: white;
+        padding: 4rem 0;
+        border-bottom: 3px solid var(--accent-color);
+    }
+
+    .hero-section h1 {
+        color: white;
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .services-section {
+        background-color: var(--bg-secondary);
+        padding: 4rem 0;
+    }
+
+    .services-section h2 {
+        color: var(--primary-color);
+    }
+
+    .service-icon {
+        font-size: 3rem;
+        color: var(--primary-light);
+        margin-bottom: 1rem;
+    }
+
+    .features-section h2 {
+        color: var(--primary-color);
+    }
+
+    .feature-checkmark {
+        color: var(--accent-color);
+        font-size: 1.8rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="py-5">
+        <!-- Hero Section -->
+        <div class="container">
+            <div class="row align-items-center py-5">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h1 class="fw-bold mb-3">
+                        <i class="fas fa-hotel me-2"></i>Welcome to Our Hotel
+                    </h1>
+                    <p class="lead mb-4">Experience luxury and comfort with our world-class amenities and exceptional service.</p>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'rooms:room_list' %}" class="btn btn-lg btn-accent me-2">
+                            <i class="fas fa-key me-2"></i>Book a Room
+                        </a>
+                        <a href="{% url 'accounts:profile' %}" class="btn btn-lg btn-primary">
+                            <i class="fas fa-user me-2"></i>View Profile
+                        </a>
+                    {% else %}
+                        <a href="{% url 'rooms:room_list' %}" class="btn btn-lg btn-accent me-2">
+                            <i class="fas fa-door-open me-2"></i>View Rooms
+                        </a>
+                        <a href="{% url 'accounts:login' %}" class="btn btn-lg btn-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login to Book
+                        </a>
+                    {% endif %}
+                </div>
+                <div class="col-lg-6">
+                    <img src="https://images.unsplash.com/photo-1564501049351-005e2cdcdb47?w=500&h=400" alt="Hotel" class="img-fluid rounded" style="box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Services Section -->
+    <div class="services-section">
+        <div class="container">
+            <h2 class="text-center mb-5 fw-bold">
+                <i class="fas fa-concierge-bell me-2"></i>Our Services
+            </h2>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="card text-center h-100 service-card">
+                        <div class="card-body">
+                            <i class="fas fa-bed service-icon"></i>
+                            <h5 class="card-title">Comfortable Rooms</h5>
+                            <p class="card-text">Luxurious rooms with modern amenities and premium furnishings.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center h-100 service-card">
+                        <div class="card-body">
+                            <i class="fas fa-utensils service-icon"></i>
+                            <h5 class="card-title">Fine Dining</h5>
+                            <p class="card-text">World-class restaurant with both local and international cuisine.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center h-100 service-card">
+                        <div class="card-body">
+                            <i class="fas fa-spa service-icon"></i>
+                            <h5 class="card-title">Spa & Wellness</h5>
+                            <p class="card-text">Relax and rejuvenate at our full-service spa center.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center h-100 service-card">
+                        <div class="card-body">
+                            <i class="fas fa-dumbbell service-icon"></i>
+                            <h5 class="card-title">Fitness Center</h5>
+                            <p class="card-text">State-of-the-art gym facilities with professional trainers.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="py-5 container">
+        <h2 class="text-center mb-5 fw-bold features-section">
+            <i class="fas fa-star me-2"></i>Why Choose Us?
+        </h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <div class="feature-checkmark">✓</div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h5>24/7 Customer Support</h5>
+                        <p class="text-muted">Our dedicated support team is available round the clock to assist you with any needs.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <div class="feature-checkmark">✓</div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h5>Best Price Guarantee</h5>
+                        <p class="text-muted">Get the best rates and exclusive deals for direct bookings with us.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <div class="feature-checkmark">✓</div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h5>Premium Amenities</h5>
+                        <p class="text-muted">Access to exclusive facilities including pools, gyms, and conference rooms.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <div class="feature-checkmark">✓</div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h5>Loyalty Rewards</h5>
+                        <p class="text-muted">Earn points with every stay and redeem them for amazing benefits.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action Section -->
+    <div class="bg-primary text-white py-5">
+        <div class="container text-center">
+            <h2 class="mb-4 fw-bold">Ready for Your Next Adventure?</h2>
+            <p class="lead mb-4">Book your stay with us and experience luxury like never before.</p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'rooms:room_list' %}" class="btn btn-accent btn-lg">
+                    <i class="fas fa-calendar-check me-2"></i>Book Now
+                </a>
+            {% else %}
+                <a href="{% url 'accounts:login' %}" class="btn btn-accent btn-lg">
+                    <i class="fas fa-key me-2"></i>Login to Book
+                </a>
+                <a href="{% url 'accounts:register' %}" class="btn btn-light btn-lg ms-2">
+                    <i class="fas fa-user-plus me-2"></i>Register
+                </a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+                        <div class="display-6 text-accent">✓</div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h5>Premium Amenities</h5>
+                        <p>Enjoy world-class facilities and contemporary room features.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <div class="display-6 text-accent">✓</div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h5>Loyalty Rewards</h5>
+                        <p>Earn points with every booking and redeem exciting rewards.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="py-5 bg-primary text-white rounded mt-5">
+        <div class="container text-center">
+            <h2 class="mb-3">Ready for an Unforgettable Stay?</h2>
+            <p class="lead mb-4">Book your room today and experience luxury like never before.</p>
+            {% if not user.is_authenticated %}
+                <a href="{% url 'accounts:register' %}" class="btn btn-lg btn-accent">Get Started</a>
+            {% else %}
+                <a href="{% url 'room_list' %}" class="btn btn-lg btn-accent">Book Now</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .min-vh-50 {
+        min-height: 50vh;
+    }
+    .text-accent {
+        color: #f39c12;
+    }
+    .bg-primary {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+    }
+</style>
+{% endblock %}

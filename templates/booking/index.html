@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Bookings - Hotel Management System{% endblock %}
+{% block content %}
+<div class="py-5">
+    <div class="container">
+        <h1 class="fw-bold mb-4">Bookings</h1>
+        {% if success %}
+        <div class="alert alert-success">Booking created successfully.</div>
+        {% endif %}
+        <a href="{% url 'reservations:reservation_list' %}" class="btn btn-primary">
+            View My Reservations
+        </a>
+    </div>
+</div>
+{% endblock %}

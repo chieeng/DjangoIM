@@ -1,0 +1,508 @@
+================================================================================
+                    ROOMS APP - DATA FLOW DOCUMENTATION
+              Hotel Management System | DjangoIMV2 Project
+================================================================================
+
+
+================================================================================
+1. DATABASE LAYER
+================================================================================
+
+DATABASE CONNECTION
+  File : hotel_system/settings.py
+  Block: DATABASES dict (line 77)
+  Flow : Django connects to MySQL hotel_db on localhost:3306
+         All model queries go through this connection.
+
+--------------------------------------------------------------------------------
+
+MODEL: RoomType
+  File  : rooms/models.py
+  Class : RoomType (line 8)
+  Table : room_types (MySQL)
+  Fields:
+    - room_type_id   -> AutoField, Primary Key
+    - type_name      -> CharField, unique (e.g. Standard, Deluxe, Suite)
+    - description    -> TextField
+    - capacity       -> IntegerField (1-10)
+    - price_per_night-> DecimalField
+    - is_active      -> BooleanField (default True)
+    - created_at     -> DateTimeField (auto)
+    - updated_at     -> DateTimeField (auto)
+
+MODEL: Room
+  File  : rooms/models.py
+  Class : Room (line 64)
+  Table : rooms (MySQL)
+  Fields:
+    - room_id        -> AutoField, Primary Key
+    - room_number    -> CharField, unique (e.g. 101, A-201)
+    - floor_number   -> IntegerField (1-50)
+    - room_type      -> ForeignKey -> RoomType (SET_NULL on delete)
+    - status         -> CharField choices:
+                        available | occupied | maintenance | reserved | cleaning
+    - price_per_night-> DecimalField
+    - image          -> ImageField (stored in media/rooms/)
+    - last_occupied  -> DateField (nullable)
+    - created_at     -> DateTimeField (auto)
+    - updated_at     -> DateTimeField (auto)
+
+MODEL: RoomAssignment
+  File  : rooms/models.py
+  Class : RoomAssignment (line 142)
+  Table : room_assignments (MySQL)
+  Fields:
+    - assignment_id  -> AutoField, Primary Key
+    - room           -> ForeignKey -> Room (CASCADE on delete)
+    - assigned_date  -> DateField (auto)
+    - check_in_time  -> TimeField (nullable)
+    - check_out_time -> TimeField (nullable)
+    - status         -> CharField choices:
+                        pending | checked_in | checked_out | cancelled
+    - notes          -> TextField
+    - created_at     -> DateTimeField (auto)
+    - updated_at     -> DateTimeField (auto)
+
+RELATIONSHIP SUMMARY:
+  RoomType (1) -----> (many) Room
+  Room     (1) -----> (many) RoomAssignment
+  Room     (1) -----> (many) Reservation  [defined in reservations/models.py]
+  Room     (1) -----> (many) Housekeeping [defined in housekeeping/models.py]
+  Room     (1) -----> (many) MaintenanceRequest [in maintenance/models.py]
+  Room     (1) -----> (many) Review       [defined in reviews/models.py]
+
+
+================================================================================
+2. URL ROUTING
+================================================================================
+
+MAIN ROUTER
+  File : hotel_system/urls.py
+  Block: urlpatterns list
+  Entry: path('rooms/', include('rooms.urls'))
+         -> All /rooms/... URLs are handled by rooms/urls.py
+
+ROOMS URL PATTERNS
+  File : rooms/urls.py
+  Block: urlpatterns list
+
+  URL                              View Function           Name
+  -----------------------------------------------------------------------
+  /rooms/                          views.index             rooms:index
+  /rooms/list/                     views.room_list         rooms:room_list
+  /rooms/types/                    views.room_type_list    rooms:room_type_list
+  /rooms/<int:pk>/                 views.room_detail       rooms:room_detail
+  /rooms/addNewRoom/               views.add_room          rooms:add_room
+  /rooms/addNewRoomType/           views.add_room_type     rooms:add_room_type
+  /rooms/addNewReservation/        views.add_reservation   rooms:add_reservation
+  /rooms/addNewRoomAssignment/     views.add_room_assignment rooms:add_room_assignment
+  /rooms/edit/<int:pk>/            views.edit_room         rooms:edit_room
+  /rooms/type/edit/<int:pk>/       views.edit_room_type    rooms:edit_room_type
+  /rooms/delete/<int:pk>/          views.delete_room       rooms:delete_room
+  /rooms/type/delete/<int:pk>/     views.delete_room_type  rooms:delete_room_type
+  /rooms/status/<int:pk>/          views.update_room_status rooms:update_room_status
+
+NAVIGATION ENTRY POINTS (in base.html navbar)
+  File : templates/base.html
+  Block: <ul class="navbar-nav ms-auto"> (line 32)
+  Links:
+    - "Rooms" -> rooms:room_list     (visible to all users)
+    - Admin dropdown -> rooms:index, rooms:add_room, rooms:add_room_type,
+                        rooms:add_room_assignment
+                        (visible only when user.role_type == 'admin')
+
+
+================================================================================
+3. ACCESS CONTROL
+================================================================================
+
+DECORATOR: staff_or_admin_required
+  File : rooms/views.py
+  Block: def staff_or_admin_required(view_func) (line 12)
+  Logic:
+    - If user is not authenticated -> redirect to accounts:login
+    - If user.role_type not in ['staff', 'admin'] -> redirect to common:index
+  Applied to: add_room, add_room_type, add_reservation, add_room_assignment,
+              edit_room, edit_room_type, delete_room, delete_room_type,
+              update_room_status
+
+PUBLIC VIEWS (no login required):
+  - room_list      -> customers see only status='available' rooms
+  - room_detail    -> all users can view any room's details
+  - room_type_list -> all users can view active room types
+
+ROLE-BASED BUTTON RENDERING (templates):
+  File : templates/rooms/room_listing.html  (Actions section, line 393)
+  File : templates/rooms/room_detail.html   (Buttons section, line 67)
+  File : templates/index.html               (Featured rooms cards)
+  Logic:
+    Staff/Admin -> Edit Room / Manage / Delete Room buttons
+    Customer    -> View Details / Book Now buttons
+    Guest       -> Login to Book / Details buttons
+
+
+================================================================================
+4. DATA FLOW: ADDING A ROOM (Admin/Staff)
+================================================================================
+
+STEP 1 - User navigates to Add Room
+  Trigger : Clicks "Add Room" in navbar Admin menu OR dashboard Quick Actions
+  Template: templates/rooms/dashboard.html -> action-card link (line 295)
+            templates/base.html -> Admin dropdown (line 54)
+  URL     : /rooms/addNewRoom/
+
+STEP 2 - Django routes the request
+  File    : rooms/urls.py
+  Matches : path('addNewRoom/', views.add_room, name='add_room')
+
+STEP 3 - View checks access and builds form (GET request)
+  File    : rooms/views.py
+  Function: add_room (line 115)
+  Actions :
+    - @login_required -> checks session, redirects to login if not authenticated
+    - @staff_or_admin_required -> checks role_type, redirects if customer
+    - Creates empty RoomForm()
+    - Passes form + title to template
+
+STEP 4 - Form is rendered
+  File    : templates/rooms/addNewRoom.html
+  Block   : <form method="post" enctype="multipart/form-data"> (line 15)
+  Fields shown (from RoomForm in rooms/forms.py):
+    - room_number    (TextInput)
+    - floor_number   (NumberInput)
+    - room_type      (Select -> queries RoomType table)
+    - status         (Select -> STATUS_CHOICES)
+    - price_per_night(NumberInput)
+    - image          (FileInput -> stored in media/rooms/)
+
+STEP 5 - User submits form (POST request)
+  File    : rooms/views.py
+  Function: add_room (line 115)
+  Actions :
+    - form = RoomForm(request.POST, request.FILES)
+    - form.is_valid() runs validators:
+        * room_number must be unique
+        * floor_number between 1-50
+        * price_per_night >= 0
+    - If valid: form.save() -> INSERT INTO rooms (...) in MySQL
+    - messages.success() -> flash message shown on next page
+    - redirect to rooms:index (dashboard)
+    - If invalid: re-renders form with error messages
+
+STEP 6 - Room saved to database
+  Table   : rooms (MySQL hotel_db)
+  Auto set: created_at, updated_at timestamps
+
+
+================================================================================
+5. DATA FLOW: ADDING A ROOM TYPE (Admin/Staff)
+================================================================================
+
+STEP 1 - Navigate to Add Room Type
+  Template: templates/rooms/dashboard.html -> "Add Room Type" action card (line 301)
+  URL     : /rooms/addNewRoomType/
+
+STEP 2 - Route matched
+  File    : rooms/urls.py
+  Matches : path('addNewRoomType/', views.add_room_type, name='add_room_type')
+
+STEP 3 - View handles GET
+  File    : rooms/views.py
+  Function: add_room_type (line 100)
+  Actions : Checks decorators, creates empty RoomTypeForm()
+
+STEP 4 - Form rendered
+  File    : templates/rooms/addNewRoomType.html
+  Block   : <form method="post"> (line 15)
+  Fields shown (from RoomTypeForm in rooms/forms.py):
+    - type_name      (TextInput)
+    - description    (Textarea)
+    - capacity       (NumberInput, 1-10)
+    - price_per_night(NumberInput)
+    - is_active      (CheckboxInput, default True)
+
+STEP 5 - POST submission
+  File    : rooms/views.py -> add_room_type
+  Actions :
+    - Validates form (type_name must be unique)
+    - form.save() -> INSERT INTO room_types (...) in MySQL
+    - Redirect to rooms:index
+
+STEP 6 - Saved to database
+  Table   : room_types (MySQL hotel_db)
+
+
+================================================================================
+6. DATA FLOW: EDITING A ROOM (Admin/Staff)
+================================================================================
+
+STEP 1 - User clicks Edit
+  Template: templates/rooms/dashboard.html -> "Edit" link in Room Overview table
+            templates/rooms/room_listing.html -> "Manage" link
+            templates/rooms/room_detail.html -> "Edit Room" button
+  URL     : /rooms/edit/<room_id>/
+
+STEP 2 - Route matched
+  File    : rooms/urls.py
+  Matches : path('edit/<int:pk>/', views.edit_room, name='edit_room')
+
+STEP 3 - View handles GET (pre-fills form)
+  File    : rooms/views.py
+  Function: edit_room (line 158)
+  Actions :
+    - get_object_or_404(Room, pk=pk) -> SELECT from rooms WHERE room_id=pk
+    - RoomForm(instance=room) -> pre-fills all fields with current data
+    - If room image exists, template shows current photo
+
+STEP 4 - Form rendered with existing data
+  File    : templates/rooms/editRoom.html
+  Block   : <form method="post" enctype="multipart/form-data"> (line 22)
+  Shows current room image as preview if one exists (line 9)
+
+STEP 5 - POST submission
+  File    : rooms/views.py -> edit_room
+  Actions :
+    - RoomForm(request.POST, request.FILES, instance=room)
+    - form.save() -> UPDATE rooms SET ... WHERE room_id=pk in MySQL
+    - Redirect to rooms:index
+
+================================================================================
+7. DATA FLOW: DELETING A ROOM (Admin/Staff)
+================================================================================
+
+STEP 1 - User clicks Delete
+  Template: templates/rooms/dashboard.html -> "Delete" link (line ~411)
+            templates/rooms/room_detail.html -> "Delete Room" button
+  URL     : /rooms/delete/<room_id>/
+
+STEP 2 - Route matched
+  File    : rooms/urls.py
+  Matches : path('delete/<int:pk>/', views.delete_room, name='delete_room')
+
+STEP 3 - View handles GET (confirmation page)
+  File    : rooms/views.py
+  Function: delete_room (line 183)
+  Actions :
+    - get_object_or_404(Room, pk=pk)
+    - Renders confirmation template (no deletion yet)
+
+STEP 4 - Confirmation page shown
+  File    : templates/rooms/confirmDeleteRoom.html
+  Block   : <form method="post"> (line 24)
+  Shows room number, floor, type, status and a warning about room assignments
+
+STEP 5 - User confirms (POST)
+  File    : rooms/views.py -> delete_room
+  Actions :
+    - room.delete() -> DELETE FROM rooms WHERE room_id=pk
+    - Also CASCADE deletes linked room_assignments (due to CASCADE in model)
+    - Redirect to rooms:index
+
+================================================================================
+8. DATA FLOW: QUICK STATUS UPDATE (Admin/Staff)
+================================================================================
+
+STEP 1 - User changes dropdown in Room Overview table
+  Template: templates/rooms/dashboard.html
+  Block   : Status update form per room row (line ~413)
+            <form method="post" action="{% url 'rooms:update_room_status' room.pk %}">
+            <select name="status"> lists all STATUS_CHOICES
+
+STEP 2 - Route matched
+  File    : rooms/urls.py
+  Matches : path('status/<int:pk>/', views.update_room_status)
+
+STEP 3 - View processes POST
+  File    : rooms/views.py
+  Function: update_room_status (line 212)
+  Actions :
+    - get_object_or_404(Room, pk=pk)
+    - Reads new_status from request.POST.get('status')
+    - Validates against Room.STATUS_CHOICES
+    - room.status = new_status; room.save()
+      -> UPDATE rooms SET status=... WHERE room_id=pk
+    - Redirect to rooms:index
+
+
+================================================================================
+9. DATA FLOW: VIEWING ROOMS (Customer / Public)
+================================================================================
+
+-- HOMEPAGE (Featured Rooms) --
+
+  URL      : / (root)
+  Route    : hotel_system/urls.py -> common.views.index
+  File     : common/views.py
+  Function : index (line 6)
+  Query    : Room.objects.filter(status='available')
+             .select_related('room_type').order_by('price_per_night')[:6]
+             -> SELECT top 6 available rooms from MySQL, cheapest first
+  Template : templates/index.html
+  Block    : "Featured Rooms" section (line 258)
+  Displays : Real rooms from DB. Shows image if uploaded, else a placeholder.
+  Buttons  :
+    Staff/Admin  -> "Manage Rooms" (rooms:index)
+    Customer     -> "View Details" (rooms:room_detail)
+    Guest        -> "Login to Book" (accounts:login)
+
+-- ROOM LIST PAGE --
+
+  URL      : /rooms/list/
+  Route    : rooms/urls.py -> views.room_list
+  File     : rooms/views.py
+  Function : room_list (line 56)
+  Query    : Room.objects.select_related('room_type').all()
+    Filter by GET params:
+      ?room_type=<id>  -> WHERE room_type_id=...
+      ?status=<val>    -> WHERE status=...  (staff/admin only)
+      ?min_price=<n>   -> WHERE price_per_night >= n
+      ?max_price=<n>   -> WHERE price_per_night <= n
+    Default (non-staff): filters status='available' automatically
+  Template : templates/rooms/room_listing.html
+  Block    : "Rooms Grid" section (line 342)
+  Buttons  :
+    Staff/Admin  -> "View Details" + "Manage" (edit_room)
+    Customer     -> "View Details"
+    Guest        -> "Details" + "Login to Book"
+  Note     : Status filter dropdown is hidden from customers (line 309)
+
+-- ROOM DETAIL PAGE --
+
+  URL      : /rooms/<pk>/
+  Route    : rooms/urls.py -> views.room_detail
+  File     : rooms/views.py
+  Function : room_detail (line 72)
+  Query    : get_object_or_404(Room, pk=pk)
+             -> SELECT * FROM rooms WHERE room_id=pk (404 if not found)
+  Template : templates/rooms/room_detail.html
+  Blocks   :
+    - Room image (uploaded photo or stock placeholder)
+    - Room info: number, type, floor, capacity, status (color-coded badge), description
+    - Price per night
+    - Info sidebar: number, floor, type, capacity, price, last occupied
+  Buttons  :
+    Staff/Admin  -> "Edit Room" + "Delete Room"
+    Customer     -> "Book Now" (rooms:add_reservation)
+    Guest        -> "Login to Book" (accounts:login)
+
+-- ROOM TYPES LIST --
+
+  URL      : /rooms/types/
+  Route    : rooms/urls.py -> views.room_type_list
+  File     : rooms/views.py
+  Function : room_type_list (line 78)
+  Query    : RoomType.objects.filter(is_active=True).prefetch_related('rooms')
+             -> SELECT active room types + prefetch linked rooms count
+  Template : templates/rooms/room_type_list.html
+  Displays : Cards per room type showing name, price, capacity, room count
+  Buttons  :
+    Staff/Admin  -> "Edit" (edit_room_type) + "Delete" (delete_room_type)
+
+
+================================================================================
+10. DATA FLOW: ROOM ASSIGNMENT (Admin/Staff)
+================================================================================
+
+  URL      : /rooms/addNewRoomAssignment/
+  Route    : rooms/urls.py -> views.add_room_assignment
+  File     : rooms/views.py
+  Function : add_room_assignment (line 145)
+  Form     : RoomAssignmentForm (rooms/forms.py, line 64)
+  Fields   :
+    - room           (Select -> lists all Room objects)
+    - check_in_time  (TimeInput)
+    - check_out_time (TimeInput)
+    - status         (Select -> ASSIGNMENT_STATUS choices)
+    - notes          (Textarea)
+  On save  : INSERT INTO room_assignments (...) in MySQL
+  Template : templates/rooms/addNewRoomAssignment.html
+
+
+================================================================================
+11. ADMIN PANEL DATA FLOW
+================================================================================
+
+  URL    : /admin/
+  File   : rooms/admin.py
+  Registered models and features:
+
+  RoomTypeAdmin (line 4):
+    - list_display   : type_name, capacity, price_per_night, is_active
+    - list_filter    : is_active
+    - search_fields  : type_name
+    - list_editable  : is_active (toggle active without opening record)
+
+  RoomAdmin (line 13):
+    - list_display   : room_number, floor_number, room_type, status, price_per_night
+    - list_filter    : status, floor_number, room_type
+    - search_fields  : room_number
+    - list_editable  : status (change status inline from the list)
+    - readonly_fields: created_at, updated_at
+
+  RoomAssignmentAdmin (line 22):
+    - list_display   : assignment_id, room, assigned_date, status,
+                       check_in_time, check_out_time
+    - list_filter    : status
+    - search_fields  : room__room_number
+
+
+================================================================================
+12. DASHBOARD DATA FLOW (Admin/Staff only)
+================================================================================
+
+  URL      : /rooms/
+  Route    : rooms/urls.py -> views.index
+  File     : rooms/views.py
+  Function : index (line 25)
+  Access   : Redirects customers to common:index with error message
+
+  Queries run:
+    - Room.objects.count()                           -> total_rooms
+    - Room.objects.filter(status='available').count()-> available_rooms
+    - Room.objects.filter(status='occupied').count() -> occupied_rooms
+    - Room.objects.filter(status='maintenance').count()-> maintenance_rooms
+    - Room.objects.filter(status='reserved').count() -> reserved_rooms
+    - Room.objects.filter(status='cleaning').count() -> cleaning_rooms
+    - occupancy_rate = occupied / total * 100
+    - RoomType.objects.all()                         -> room_types
+    - Reservation.objects.order_by('-reservation_date')[:5] -> recent_reservations
+    - Room.objects.select_related('room_type').order_by('room_number') -> all_rooms
+
+  Template : templates/rooms/dashboard.html
+  Sections :
+    - Welcome box (user name and role)        line 258
+    - Room Statistics cards (6 stat cards)    line 264
+    - Quick Actions grid (links to add forms) line 293
+    - Recent Reservations table               line 332
+    - Room Overview table (with edit/delete
+      buttons and inline status updater)      line 377
+
+
+================================================================================
+13. IMAGE UPLOAD FLOW
+================================================================================
+
+  Model field : Room.image (ImageField, upload_to='rooms/')
+  File        : rooms/models.py (line 112)
+
+  On upload   :
+    - File stored at: hotel_system_new/media/rooms/<filename>
+    - Filename saved to: rooms.image column in MySQL
+
+  Settings    :
+    File      : hotel_system/settings.py
+    MEDIA_URL  = '/media/'          (line 118)
+    MEDIA_ROOT = BASE_DIR / 'media' (line 119)
+
+  Served in templates via : {{ room.image.url }}
+  Forms that handle upload :
+    - templates/rooms/addNewRoom.html  -> enctype="multipart/form-data" (line 15)
+    - templates/rooms/editRoom.html    -> enctype="multipart/form-data" (line 22)
+  Views that handle FILES :
+    - views.add_room   -> RoomForm(request.POST, request.FILES)   (line 122)
+    - views.edit_room  -> RoomForm(request.POST, request.FILES, instance=room) (line 163)
+
+
+================================================================================
+END OF DOCUMENT
+================================================================================
