@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Reservation Details</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; }
+      .layout { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+      .col { flex: 1 1 420px; min-width: 360px; }
+      .card { border: 1px solid #ddd; padding: 16px; border-radius: 6px; margin-bottom: 16px; }
+      .row { display: flex; gap: 12px; flex-wrap: wrap; }
+      label { display: block; font-weight: 600; margin-bottom: 6px; }
+      input { padding: 8px; min-width: 180px; }
+      button { padding: 10px 14px; cursor: pointer; }
+      .muted { color: #666; }
+      .kv { display: grid; grid-template-columns: 180px 1fr; gap: 8px 12px; }
+      .kv div { padding: 2px 0; }
+      .kv .k { color: #555; }
+      .kv .v { color: #111; font-weight: 600; }
+    </style>
+  </head>
+  <body>
+    <h1>Reservation Details</h1>
+
+    <div class="layout">
+      <div class="col">
+        <div class="card">
+          <h2 style="margin-top:0;">Selected Room</h2>
+          <div class="kv">
+            <div class="k">Room #</div><div class="v">{{ room.room_number }}</div>
+            <div class="k">Type</div><div class="v">{{ room.room_type.type_name }}</div>
+            <div class="k">Price/Night</div><div class="v">{{ room.price_per_night }}</div>
+            <div class="k">Dates</div><div class="v">{{ check_in_date }} to {{ check_out_date }}</div>
+            <div class="k">Times</div><div class="v">{{ check_in_time|time:"H:i" }} to {{ check_out_time|time:"H:i" }} (fixed)</div>
+          </div>
+          <p class="muted">A senior discount will be applied later during invoice/payment if there is at least one senior guest.</p>
+        </div>
+
+        {% if form %}
+          <div class="card">
+            <h2 style="margin-top:0;">Guests</h2>
+
+            <form method="post">
+              {% csrf_token %}
+              <input type="hidden" name="room_id" value="{{ room.room_id }}">
+              <input type="hidden" name="check_in_date" value="{{ check_in_date|date:'Y-m-d' }}">
+              <input type="hidden" name="check_out_date" value="{{ check_out_date|date:'Y-m-d' }}">
+
+              <div class="row">
+                <div>
+                  <label>Adults</label>
+                  {{ form.adults }}
+                </div>
+                <div>
+                  <label>Kids</label>
+                  {{ form.kids }}
+                </div>
+                <div>
+                  <label>Seniors</label>
+                  {{ form.seniors }}
+                </div>
+              </div>
+
+              <p style="margin-top:10px;"><strong>Total guests:</strong> <span id="totalGuests">1</span></p>
+
+              {% if form.non_field_errors %}
+                <p style="color:#b00020;">{{ form.non_field_errors }}</p>
+              {% endif %}
+
+              <div style="margin-top:12px;">
+                <button type="submit">Proceed Reservation</button>
+                <a href="{% url 'accounts:customer_dashboard' %}" style="margin-left:10px;">Cancel</a>
+              </div>
+            </form>
+          </div>
+        {% endif %}
+      </div>
+
+      {% if invoice and reservation %}
+        <div class="col">
+          <div class="card">
+            <h2 style="margin-top:0;">Invoice</h2>
+            <div class="kv">
+              <div class="k">Original Amount</div><div class="v">{{ original_amount }}</div>
+              <div class="k">Discount Name</div><div class="v">{% if discount %}{{ discount.discount_name }}{% else %}None{% endif %}</div>
+              <div class="k">Discount Percentage</div><div class="v">{% if discount %}{{ discount.percentage }}%{% else %}0%{% endif %}</div>
+              <div class="k">Discount Amount</div><div class="v">{% if discount %}{{ discount_amount }}{% else %}0{% endif %}</div>
+              <div class="k">Final Total</div><div class="v">{{ invoice.total_amount }}</div>
+              <div class="k">Issue Date</div><div class="v">{{ invoice.issue_date }}</div>
+              <div class="k">Due Date</div><div class="v">{{ invoice.due_date }}</div>
+              <div class="k">Invoice Status</div><div class="v">{{ invoice.invoice_status }}</div>
+            </div>
+
+            <div style="margin-top:14px;">
+              <a href="{% url 'booking:payment_page' reservation.booking.booking_id %}">
+                <button type="button">Proceed to Payment</button>
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </body>
+</html>
+
+{% if form %}
+<script>
+  (function () {
+    function val(id) {
+      var el = document.getElementById(id);
+      if (!el) return 0;
+      var n = parseInt(el.value || "0", 10);
+      return isNaN(n) ? 0 : n;
+    }
+
+    function updateTotal() {
+      var total = val("id_adults") + val("id_kids") + val("id_seniors");
+      var out = document.getElementById("totalGuests");
+      if (out) out.textContent = String(total);
+    }
+
+    ["id_adults", "id_kids", "id_seniors"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener("input", updateTotal);
+    });
+
+    updateTotal();
+  })();
+</script>
+{% endif %}

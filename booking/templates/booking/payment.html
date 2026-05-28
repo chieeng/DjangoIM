@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Payment</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; }
+      .card { border: 1px solid #ddd; padding: 16px; border-radius: 6px; margin-bottom: 16px; max-width: 760px; }
+      .kv { display: grid; grid-template-columns: 180px 1fr; gap: 8px 12px; }
+      .k { color: #555; }
+      .v { font-weight: 600; }
+    </style>
+  </head>
+  <body>
+    <h1>Payment</h1>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Invoice Summary</h2>
+      {% if invoice %}
+        <div class="kv">
+          <div class="k">Booking ID</div><div class="v">{{ booking.booking_id }}</div>
+          <div class="k">Invoice Status</div><div class="v">{{ invoice.invoice_status }}</div>
+          <div class="k">Amount Due</div><div class="v">{{ invoice.total_amount }}</div>
+          <div class="k">Due Date</div><div class="v">{{ invoice.due_date }}</div>
+          <div class="k">Discount</div><div class="v">{% if discount %}{{ discount.discount_name }} ({{ discount.percentage }}%){% else %}None{% endif %}</div>
+        </div>
+        <form method="post" style="margin-top:14px;">
+          {% csrf_token %}
+          <button type="submit">Paid</button>
+        </form>
+      {% else %}
+        <p>No invoice found for this booking.</p>
+      {% endif %}
+    </div>
+
+    {% if messages %}
+      <div class="card">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <p><a href="{% url 'booking:booking_list' %}">Back to My Reservations</a></p>
+  </body>
+</html>

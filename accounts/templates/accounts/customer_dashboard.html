@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .card { border: 1px solid #ddd; padding: 16px; border-radius: 6px; margin-bottom: 16px; }
+        .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-start; }
+        /* Keep date inputs stable size even when error text appears */
+        .field { display: flex; flex-direction: column; flex: 0 0 240px; }
+        .error-slot { min-height: 18px; margin-top: 6px; }
+        .error-text { color:#b00020; margin: 0; font-size: 12px; line-height: 1.2; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; }
+        input { padding: 8px; width: 100%; min-width: 0; box-sizing: border-box; }
+        button { padding: 10px 14px; cursor: pointer; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #eee; padding: 10px; text-align: left; }
+        th { background: #f7f7f7; }
+
+        .toast-wrap { position: fixed; top: 16px; right: 16px; z-index: 9999; display: grid; gap: 10px; }
+        .toast {
+            min-width: 280px;
+            max-width: 420px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            color: #111;
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .toast.success { border-left: 6px solid #1a7f37; }
+        .toast.error { border-left: 6px solid #b00020; }
+        .toast .msg { line-height: 1.35; }
+        .toast .close {
+            border: 0;
+            background: transparent;
+            padding: 0;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Welcome {{ user.first_name }} {{ user.last_name }}</h1>
+
+    <hr>
+
+    {% if messages %}
+        <div class="toast-wrap" id="toastWrap">
+            {% for message in messages %}
+                <div class="toast {% if message.tags %}{{ message.tags }}{% endif %}">
+                    <div class="msg">{{ message }}</div>
+                    <button type="button" class="close" aria-label="Close">x</button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="card">
+        <h2>Create Booking</h2>
+        <p style="margin-top:6px;color:#666;">Note: Check-in time is fixed at 12:00 PM and check-out time is fixed at 12:00 PM.</p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="field">
+                    <label>Check-in Date</label>
+                    {{ form.check_in_date }}
+                    <div class="error-slot">
+                        {% if form.check_in_date.errors %}
+                            <p class="error-text">{{ form.check_in_date.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Check-out Date</label>
+                    {{ form.check_out_date }}
+                    <div class="error-slot">
+                        {% if form.check_out_date.errors %}
+                            <p class="error-text">{{ form.check_out_date.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if form.non_field_errors %}
+                <p style="color:#b00020;">{{ form.non_field_errors }}</p>
+            {% endif %}
+
+            <div style="margin-top:12px;">
+                <button type="submit">Search</button>
+            </div>
+        </form>
+    </div>
+
+    {% if available_rooms is not None %}
+        <div class="card">
+            <h2>Available Rooms</h2>
+
+            {% if available_rooms %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Room</th>
+                            <th>Type</th>
+                            <th>Capacity</th>
+                            <th>Price</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for room in available_rooms %}
+                            <tr>
+                                <td>{{ room.room_number }}</td>
+                                <td>{{ room.room_type.type_name }}</td>
+                                <td>{{ room.room_type.max_capacity }}</td>
+                                <td>{{ room.price_per_night }}</td>
+                                <td>
+                                    <a href="{% url 'booking:reservation_details' %}?room_id={{ room.room_id }}&check_in_date={{ requested_check_in_date|date:'Y-m-d' }}&check_out_date={{ requested_check_out_date|date:'Y-m-d' }}">
+                                        <button type="button">Book</button>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No rooms are available for that date/time range.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <br><br>
+
+    <a href="{% url 'accounts:logout' %}">
+        <button>Logout</button>
+    </a>
+
+</body>
+</html>
+
+<script>
+  (function () {
+    var wrap = document.getElementById('toastWrap');
+    if (!wrap) return;
+
+    function dismiss(toast) {
+      if (!toast) return;
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-6px)';
+      toast.style.transition = 'opacity 180ms ease, transform 180ms ease';
+      window.setTimeout(function () {
+        if (toast && toast.parentNode) toast.parentNode.removeChild(toast);
+      }, 220);
+    }
+
+    Array.prototype.forEach.call(wrap.querySelectorAll('.toast'), function (toast) {
+      var btn = toast.querySelector('.close');
+      if (btn) btn.addEventListener('click', function () { dismiss(toast); });
+      window.setTimeout(function () { dismiss(toast); }, 3500);
+    });
+  })();
+</script>
+</html>

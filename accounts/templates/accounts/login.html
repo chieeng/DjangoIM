@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Login</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div>
+            <label>Email:</label>
+            {{ form.email }}
+        </div>
+
+        <br>
+
+        <div>
+            <label>Password:</label>
+            {{ form.password }}
+        </div>
+
+        <br>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <p>
+        Don't have an account?
+        <a href="{% url 'accounts:register' %}">Register here</a>
+    </p>
+</body>
+</html>
