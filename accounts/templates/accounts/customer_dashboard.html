@@ -64,7 +64,20 @@
     {% endif %}
 
     <div class="card">
-        <h2>Create Booking</h2>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+            <h2 style="margin:0;">Create Booking</h2>
+            <a href="{% url 'booking:booking_list' %}" style="text-decoration:none;">
+                <button type="button" title="View my bookings" aria-label="View my bookings">
+                    <span style="display:inline-flex;align-items:center;gap:8px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        View My Bookings
+                    </span>
+                </button>
+            </a>
+        </div>
         <p style="margin-top:6px;color:#666;">Note: Check-in time is fixed at 12:00 PM and check-out time is fixed at 12:00 PM.</p>
 
         <form method="post">

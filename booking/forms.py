@@ -29,7 +29,7 @@ class AvailabilitySearchForm(forms.Form):
 
 
 class ReservationDetailsForm(forms.Form):
-    adults = forms.IntegerField(min_value=1, initial=1)
+    adults = forms.IntegerField(min_value=0, initial=1)
     kids = forms.IntegerField(min_value=0, initial=0)
     seniors = forms.IntegerField(min_value=0, initial=0)
 

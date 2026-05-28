@@ -101,10 +101,6 @@ def reservation_details(request):
         .exists()
     )
 
-    if not still_available:
-        messages.error(request, "Sorry, that room is no longer available for that date range.")
-        return redirect("accounts:customer_dashboard")
-
     form = ReservationDetailsForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
@@ -233,6 +229,9 @@ def payment_page(request, booking_id: int):
     if request.method == "POST":
         if invoice is None:
             messages.error(request, "No invoice found for this booking.")
+            return redirect("booking:payment_page", booking_id=booking.booking_id)
+        if (invoice.invoice_status or "").lower() == "paid":
+            messages.info(request, "This invoice is already marked as paid.")
             return redirect("booking:payment_page", booking_id=booking.booking_id)
 
         with transaction.atomic():

@@ -27,7 +27,11 @@
         </div>
         <form method="post" style="margin-top:14px;">
           {% csrf_token %}
-          <button type="submit">Paid</button>
+          {% if invoice.invoice_status|lower == "paid" %}
+            <button type="submit" disabled title="Invoice already paid">Paid</button>
+          {% else %}
+            <button type="submit">Paid</button>
+          {% endif %}
         </form>
       {% else %}
         <p>No invoice found for this booking.</p>

@@ -69,7 +69,7 @@
               {% endif %}
 
               <div style="margin-top:12px;">
-                <button type="submit">Proceed Reservation</button>
+                <button type="submit" id="proceedReservationBtn">Proceed Reservation</button>
                 <a href="{% url 'accounts:customer_dashboard' %}" style="margin-left:10px;">Cancel</a>
               </div>
             </form>
@@ -93,9 +93,13 @@
             </div>
 
             <div style="margin-top:14px;">
-              <a href="{% url 'booking:payment_page' reservation.booking.booking_id %}">
-                <button type="button">Proceed to Payment</button>
-              </a>
+              {% if invoice.invoice_status|lower == "paid" %}
+                <button type="button" disabled title="Invoice already paid">Proceed to Payment</button>
+              {% else %}
+                <a href="{% url 'booking:payment_page' reservation.booking.booking_id %}">
+                  <button type="button">Proceed to Payment</button>
+                </a>
+              {% endif %}
             </div>
           </div>
         </div>
@@ -118,6 +122,8 @@
       var total = val("id_adults") + val("id_kids") + val("id_seniors");
       var out = document.getElementById("totalGuests");
       if (out) out.textContent = String(total);
+      var btn = document.getElementById("proceedReservationBtn");
+      if (btn) btn.disabled = total <= 0;
     }
 
     ["id_adults", "id_kids", "id_seniors"].forEach(function (id) {

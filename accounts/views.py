@@ -116,8 +116,7 @@ def customer_dashboard(request):
         )
 
         available_rooms = (
-            Room.objects.filter(status__iexact="Available")
-            .annotate(_has_overlap=Exists(overlap_qs))
+            Room.objects.annotate(_has_overlap=Exists(overlap_qs))
             .filter(_has_overlap=False)
             .select_related("room_type")
             .order_by("room_number")
