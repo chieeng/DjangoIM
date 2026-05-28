@@ -7,7 +7,6 @@ from rooms.models import Room
 
 
 def reservation_list(request):
-    """List the current user's reservations"""
     if request.user.is_authenticated:
         reservations = Reservation.objects.filter(
             customer=request.user
@@ -19,7 +18,6 @@ def reservation_list(request):
 
 
 def my_bookings(request):
-    """View user's bookings"""
     if request.user.is_authenticated:
         bookings = Booking.objects.filter(reservation__customer=request.user)
     else:
@@ -30,23 +28,18 @@ def my_bookings(request):
 
 @login_required(login_url='accounts:login')
 def create_reservation(request):
-    """Create a new reservation (customer-facing).
-    Room stays 'available' — it is only locked when staff confirms the reservation.
-    """
     selected_room = None
     room_id = request.GET.get('room')
     if room_id:
         selected_room = Room.objects.filter(pk=room_id, status='available').select_related('room_type').first()
 
     if request.method == 'POST':
-        form = CustomerReservationForm(request.POST)
+        form = CustomerReservationForm(request.POST, user=request.user)
         if form.is_valid():
             reservation = form.save(commit=False)
             reservation.customer = request.user
             reservation.reservation_status = 'pending'
             reservation.save()
-            # Room status is intentionally NOT changed here.
-            # The room is locked only when staff confirms the reservation.
             messages.success(
                 request,
                 f'Reservation #{reservation.reservation_id} submitted! '
@@ -55,7 +48,7 @@ def create_reservation(request):
             return redirect('reservations:reservation_list')
     else:
         initial = {'room': selected_room} if selected_room else {}
-        form = CustomerReservationForm(initial=initial)
+        form = CustomerReservationForm(initial=initial, user=request.user)
 
     context = {
         'form': form,
@@ -66,7 +59,6 @@ def create_reservation(request):
 
 @login_required(login_url='accounts:login')
 def reservation_detail(request, pk):
-    """View a single reservation (own reservations only)"""
     reservation = get_object_or_404(Reservation, pk=pk, customer=request.user)
     context = {'reservation': reservation}
     return render(request, 'reservations/reservation_detail.html', context)
@@ -74,9 +66,6 @@ def reservation_detail(request, pk):
 
 @login_required(login_url='accounts:login')
 def cancel_reservation(request, pk):
-    """Cancel a reservation (POST only, own reservations only).
-    If the reservation was already confirmed, the room is freed back to available.
-    """
     reservation = get_object_or_404(Reservation, pk=pk, customer=request.user)
     if request.method == 'POST':
         if reservation.reservation_status in ['pending', 'confirmed']:
@@ -94,10 +83,6 @@ def cancel_reservation(request, pk):
 
 @login_required(login_url='accounts:login')
 def confirm_reservation(request, pk):
-    """Staff/Admin only: confirm a pending reservation.
-    - Locks the room (sets status to 'reserved')
-    - Auto-cancels all other pending reservations for the same room
-    """
     if request.user.role_type not in ['staff', 'admin']:
         messages.error(request, 'You do not have permission to confirm reservations.')
         return redirect('common:index')
@@ -116,7 +101,6 @@ def confirm_reservation(request, pk):
             reservation.room.status = 'reserved'
             reservation.room.save()
 
-            # Cancel every other pending reservation competing for this room
             competing = Reservation.objects.filter(
                 room=reservation.room,
                 reservation_status='pending'

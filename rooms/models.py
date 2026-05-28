@@ -3,13 +3,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class RoomType(models.Model):
-    """
-    ROOMTYPE — defines room categories.
-
-    FK rules (IM2):
-      - No FK outgoing from this table.
-      - Rooms reference this table with PROTECT (see Room.room_type).
-    """
     room_type_id = models.AutoField(primary_key=True, db_column='room_type_id')
     type_name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
@@ -33,15 +26,6 @@ class RoomType(models.Model):
 
 
 class Room(models.Model):
-    """
-    ROOM — individual hotel rooms.
-
-    FK rules (IM2):
-      - room_type → ROOMTYPE: PROTECT
-        A room type cannot be deleted while rooms still reference it.
-        This preserves referential integrity — a room must always have
-        a valid classification.
-    """
     STATUS_CHOICES = [
         ('available', 'Available'),
         ('occupied', 'Occupied'),
@@ -55,7 +39,6 @@ class Room(models.Model):
     floor_number = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(50)]
     )
-    # PROTECT: cannot delete a RoomType that rooms are still using
     room_type = models.ForeignKey(
         RoomType,
         on_delete=models.PROTECT,
@@ -88,27 +71,12 @@ class Room(models.Model):
 
 
 class RoomAssignment(models.Model):
-    """
-    ROOM ASSIGNMENT — records the actual check-in/check-out of a guest
-    against a confirmed reservation.
-
-    FK rules (IM2):
-      - reservation → RESERVATION: CASCADE
-        An assignment only exists as part of a reservation.
-        If the reservation is deleted, the assignment is deleted too.
-
-      - room → ROOM: CASCADE
-        If the room record is removed, the assignment is invalid
-        and is deleted as well.
-    """
     assignment_id = models.AutoField(primary_key=True, db_column='assignment_id')
-    # CASCADE: assignment is meaningless without its reservation
     reservation = models.ForeignKey(
         'reservations.Reservation',
         on_delete=models.CASCADE,
         related_name='room_assignments'
     )
-    # CASCADE: assignment is meaningless without its room
     room = models.ForeignKey(
         Room,
         on_delete=models.CASCADE,

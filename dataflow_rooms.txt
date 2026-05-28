@@ -1,0 +1,238 @@
+================================================================================
+DATA FLOW — ROOM, ROOMTYPE, RESERVATION, ROOMASSIGNMENT
+================================================================================
+
+TABLES COVERED
+--------------
+  ROOMTYPE        room_types        (rooms app)
+  ROOM            rooms             (rooms app)
+  RESERVATION     reservations      (reservations app)
+  ROOMASSIGNMENT  room_assignments  (rooms app)
+
+FOREIGN KEY RULES (IM2)
+-----------------------
+  Room.room_type        → ROOMTYPE   : PROTECT
+      Cannot delete a RoomType while rooms still reference it.
+
+  Reservation.customer  → USER       : CASCADE
+      Deleting a user deletes all their reservations.
+
+  Reservation.room      → ROOM       : SET_NULL
+      Deleting a room preserves reservation history (room set to NULL).
+
+  RoomAssignment.reservation → RESERVATION : CASCADE
+      Deleting a reservation deletes its assignment.
+
+  RoomAssignment.room        → ROOM        : CASCADE
+      Deleting a room deletes its assignment records.
+
+================================================================================
+FLOW 1: ADD ROOM TYPE
+================================================================================
+
+  URL     GET/POST  /rooms/addNewRoomType/
+  View    rooms/views.py  →  add_room_type()
+  Form    rooms/forms.py  →  RoomTypeForm (ModelForm)
+  Model   rooms/models.py →  RoomType
+
+  GET:
+    1. View renders empty RoomTypeForm
+    2. Template: rooms/addNewRoomType.html
+
+  POST:
+    1. View receives form data
+    2. RoomTypeForm validates: type_name, description, max_capacity, price_per_night
+    3. form.save() → INSERT into room_types
+    4. Redirect → rooms:index (dashboard)
+
+  Access: staff / admin only (@staff_or_admin_required)
+
+================================================================================
+FLOW 2: ADD ROOM
+================================================================================
+
+  URL     GET/POST  /rooms/addNewRoom/
+  View    rooms/views.py  →  add_room()
+  Form    rooms/forms.py  →  RoomForm (ModelForm)
+  Model   rooms/models.py →  Room
+
+  GET:
+    1. View renders empty RoomForm
+    2. Template: rooms/addNewRoom.html
+
+  POST:
+    1. View receives form data
+    2. RoomForm validates: room_number, floor_number, room_type (FK), status, price_per_night
+    3. form.save() → INSERT into rooms
+    4. Redirect → rooms:index
+
+  Note: room_type must exist first (PROTECT constraint).
+  Access: staff / admin only
+
+================================================================================
+FLOW 3: CUSTOMER MAKES A RESERVATION
+================================================================================
+
+  URL     GET/POST  /reservations/create/
+  View    reservations/views.py  →  create_reservation()
+  Form    reservations/forms.py  →  CustomerReservationForm (ModelForm)
+  Model   reservations/models.py →  Reservation
+
+  GET:
+    1. View builds CustomerReservationForm
+    2. Form filters room queryset → only rooms with status='available'
+    3. Optional: ?room=<pk> pre-selects a room
+    4. Template: reservations/create_reservation.html
+
+  POST:
+    1. View receives form data
+    2. CustomerReservationForm.clean() validates:
+         - check_in_date not in the past
+         - check_out_date after check_in_date
+         - User does NOT already have a pending/confirmed reservation for same room
+    3. If valid:
+         reservation.customer = request.user   (set from session)
+         reservation.reservation_status = 'pending'
+         form.save() → INSERT into reservations
+    4. Room status is NOT changed yet (stays 'available')
+    5. Redirect → reservations:reservation_list
+    6. Success message shown
+
+  Access: @login_required (customer, staff, admin)
+
+================================================================================
+FLOW 4: STAFF CONFIRMS A RESERVATION (PRIORITY QUEUE)
+================================================================================
+
+  URL     POST  /reservations/<pk>/confirm/
+  View    reservations/views.py  →  confirm_reservation()
+  Models  Reservation, Room
+
+  Dashboard shows pending reservations grouped by room, ordered by
+  reservation_date ascending. Earliest per room = Priority #1.
+  Only Priority #1 reservations show a Confirm button.
+
+  POST:
+    1. View checks user.role_type in ['staff', 'admin']
+    2. Loads Reservation by pk, checks status == 'pending'
+    3. Sets reservation.reservation_status = 'confirmed'
+    4. Sets reservation.room.status = 'reserved'      (locks the room)
+    5. Auto-cancels all OTHER pending reservations for the same room
+         → UPDATE reservations SET reservation_status='cancelled'
+            WHERE room=same_room AND status='pending' AND pk != confirmed_pk
+    6. Shows info message with count of cancelled reservations
+    7. Redirect → rooms:index
+
+  Access: staff / admin only (role check inside view)
+
+================================================================================
+FLOW 5: STAFF CREATES ROOM ASSIGNMENT (GUEST CHECKS IN)
+================================================================================
+
+  URL     GET/POST  /rooms/addNewRoomAssignment/
+  View    rooms/views.py  →  add_room_assignment()
+  Form    rooms/forms.py  →  RoomAssignmentForm (ModelForm)
+  Model   rooms/models.py →  RoomAssignment
+
+  GET:
+    1. RoomAssignmentForm.__init__() filters:
+         reservation queryset → confirmed reservations with NO existing assignment
+         room queryset        → rooms with status='reserved'
+    2. Template: rooms/addNewRoomAssignment.html
+
+  POST:
+    1. View receives form data
+    2. RoomAssignmentForm validates reservation and room selection
+    3. assignment = form.save()
+         → INSERT into room_assignments
+    4. assignment.room.status = 'occupied'
+         → UPDATE rooms SET status='occupied'
+    5. assignment.reservation.reservation_status = 'checked_in'
+         → UPDATE reservations SET reservation_status='checked_in'
+    6. Redirect → rooms:index
+
+  Access: staff / admin only
+
+================================================================================
+FLOW 6: CUSTOMER CANCELS A RESERVATION
+================================================================================
+
+  URL     POST  /reservations/<pk>/cancel/
+  View    reservations/views.py  →  cancel_reservation()
+  Models  Reservation, Room
+
+  POST:
+    1. Loads reservation, ensures customer == request.user (own only)
+    2. Checks status in ['pending', 'confirmed']
+    3. Sets reservation.reservation_status = 'cancelled'
+    4. If was confirmed AND room.status == 'reserved':
+         Sets room.status = 'available'   (frees the room)
+    5. Redirect → reservations:reservation_list
+
+  Access: @login_required, own reservations only
+
+================================================================================
+FLOW 7: BROWSE ROOMS (PUBLIC)
+================================================================================
+
+  URL     GET  /rooms/list/
+  View    rooms/views.py  →  room_list()
+  Model   Room, RoomType
+
+  1. Loads all rooms with room_type (select_related)
+  2. Applies optional GET filters:
+       ?room_type=<pk>   → filter by RoomType
+       ?status=<value>   → filter by status (staff/admin only)
+       ?min_price=<val>  → filter price >= val
+       ?max_price=<val>  → filter price <= val
+  3. Non-staff/non-admin users always see only status='available' rooms
+  4. Template: rooms/room_listing.html
+
+  Access: public (no login required)
+
+================================================================================
+FLOW 8: STAFF DASHBOARD (OVERVIEW)
+================================================================================
+
+  URL     GET  /rooms/
+  View    rooms/views.py  →  index()
+  Models  Room, RoomType, Reservation
+
+  Builds:
+    - Room stats: total, available, occupied, maintenance, reserved, cleaning
+    - Occupancy rate = (occupied / total) * 100
+    - pending_with_priority: pending reservations with per-room priority number
+    - recent_reservations: last 10 non-pending reservations
+    - all_rooms: all rooms for the overview table (first 10 shown in template)
+
+  Template: rooms/dashboard.html
+
+  Access: staff / admin only
+
+================================================================================
+ROOM STATUS STATE MACHINE
+================================================================================
+
+  available   →  reserved    (Staff confirms a reservation)
+  reserved    →  occupied    (Staff creates RoomAssignment / guest checks in)
+  occupied    →  cleaning    (Manual status update via dashboard)
+  cleaning    →  available   (Manual status update via dashboard)
+  available   →  maintenance (Manual status update via dashboard)
+  maintenance →  available   (Manual status update via dashboard)
+  reserved    →  available   (Customer or staff cancels a confirmed reservation)
+
+  Manual updates go through:
+    POST /rooms/status/<pk>/  →  update_room_status()
+
+================================================================================
+RESERVATION STATUS STATE MACHINE
+================================================================================
+
+  pending     →  confirmed   (Staff confirms via dashboard)
+  pending     →  cancelled   (Customer cancels OR auto-cancelled when another
+                              reservation for same room is confirmed)
+  confirmed   →  checked_in  (Staff creates RoomAssignment)
+  confirmed   →  cancelled   (Customer cancels; room freed back to available)
+  checked_in  →  checked_out (Future: manual update or checkout flow)
+
+================================================================================

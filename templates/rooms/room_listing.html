@@ -292,7 +292,6 @@
 </div>
 
 <div class="container">
-    <!-- Filter Section -->
     <div class="filter-section">
         <h3>🔍 Filter Rooms</h3>
         <form method="GET" action="">
@@ -330,36 +329,31 @@
         </form>
     </div>
 
-    <!-- Active Filters Display -->
     {% if request.GET.room_type or request.GET.status or request.GET.min_price or request.GET.max_price %}
     <div style="margin-bottom: 20px; padding: 15px; background: #e8f4f8; border-radius: 5px;">
         <strong>Active Filters:</strong>
-        {% if request.GET.room_type %}<span style="margin-right: 10px;">Room Type: {{ request.GET.get_room_type_display }}</span>{% endif %}
+        {% if request.GET.room_type %}<span style="margin-right: 10px;">Room Type: {% for rt in room_types %}{% if rt.pk|stringformat:"s" == request.GET.room_type %}{{ rt.type_name }}{% endif %}{% endfor %}</span>{% endif %}
         {% if request.GET.status %}<span style="margin-right: 10px;">Status: {{ request.GET.status|title }}</span>{% endif %}
         {% if request.GET.min_price %}<span style="margin-right: 10px;">Min: ${{ request.GET.min_price }}</span>{% endif %}
         {% if request.GET.max_price %}<span>Max: ${{ request.GET.max_price }}</span>{% endif %}
     </div>
     {% endif %}
 
-    <!-- Rooms Grid -->
     {% if rooms %}
         <div class="page-count">Showing {{ rooms|length }} of {{ total_rooms }} rooms</div>
         
         <div class="rooms-grid">
             {% for room in rooms %}
             <div class="room-card">
-                <!-- Room Header -->
                 <div class="room-header">
                     <div class="room-number">Room {{ room.room_number }}</div>
                     <div class="room-status status-{{ room.status }}">{{ room.status|title }}</div>
                 </div>
 
-                <!-- Room Details -->
                 <div class="room-details">
                     <div class="room-type">{{ room.room_type.type_name }}</div>
                     <div class="room-floor">📍 Floor {{ room.floor_number }}</div>
 
-                    <!-- Specs -->
                     <div class="room-specs">
                         <div class="spec-item">
                             <span class="spec-icon">👥</span>
@@ -371,10 +365,8 @@
                         </div>
                     </div>
 
-                    <!-- Price -->
                     <div class="room-price">${{ room.price_per_night|floatformat:2 }}<small>/night</small></div>
 
-                    <!-- Amenities -->
                     <div class="room-amenities">
                         <h6>✨ Room Amenities</h6>
                         <div class="amenity-list">
@@ -386,7 +378,6 @@
                         </div>
                     </div>
 
-                    <!-- Actions -->
                     <div class="room-actions">
                         {% if user.is_authenticated and user.role_type in 'staff,admin' %}
                             <a href="{% url 'rooms:room_detail' room.pk %}" class="btn-details">View Details</a>
@@ -403,7 +394,6 @@
             {% endfor %}
         </div>
 
-        <!-- Pagination -->
         {% if is_paginated %}
         <nav aria-label="Room pagination" class="pagination">
             <ul class="pagination justify-content-center">

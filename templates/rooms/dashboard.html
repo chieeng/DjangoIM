@@ -258,7 +258,6 @@
 </div>
 
 <div class="container">
-    <!-- Welcome Message -->
     {% if user.is_authenticated %}
     <div class="welcome-box">
         <h4>Welcome, {{ user.get_full_name|default:user.username }}!</h4>
@@ -266,7 +265,6 @@
     </div>
     {% endif %}
 
-    <!-- Key Statistics -->
     <h2 class="section-title">📈 Room Statistics</h2>
     <div class="stats-grid">
         <div class="stat-card available">
@@ -294,7 +292,6 @@
         </div>
     </div>
 
-    <!-- Quick Actions -->
     <h2 class="section-title">⚡ Quick Actions</h2>
     <div class="actions-grid">
         <a href="{% url 'rooms:add_room' %}" class="action-card">
@@ -340,7 +337,6 @@
         </a>
     </div>
 
-    <!-- Pending Reservations Queue -->
     <h2 class="section-title">⏳ Pending Reservations
         {% if pending_with_priority %}
         <span style="font-size:1rem; font-weight:400; color:#666; margin-left:10px;">
@@ -420,7 +416,6 @@
     </div>
     {% endif %}
 
-    <!-- Recent Activity -->
     <h2 class="section-title">📋 Recent Activity</h2>
     {% if recent_reservations %}
     <div class="table-section">
@@ -458,7 +453,6 @@
     </div>
     {% endif %}
 
-    <!-- Room Overview Table -->
     <h2 class="section-title">🏨 Room Overview</h2>
     {% if all_rooms %}
     <div class="table-section">

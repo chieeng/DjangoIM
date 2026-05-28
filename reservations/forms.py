@@ -22,6 +22,7 @@ class CustomerReservationForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         self.fields['room'].queryset = Room.objects.filter(status='available').select_related('room_type')
         self.fields['room'].empty_label = 'Select a room...'
@@ -31,6 +32,7 @@ class CustomerReservationForm(forms.ModelForm):
         cleaned_data = super().clean()
         check_in = cleaned_data.get('check_in_date')
         check_out = cleaned_data.get('check_out_date')
+        room = cleaned_data.get('room')
         today = timezone.now().date()
 
         if check_in and check_in < today:
@@ -39,6 +41,15 @@ class CustomerReservationForm(forms.ModelForm):
         if check_in and check_out:
             if check_out <= check_in:
                 self.add_error('check_out_date', 'Check-out date must be after check-in date.')
+
+        if room and self.user:
+            already_reserved = Reservation.objects.filter(
+                customer=self.user,
+                room=room,
+                reservation_status__in=['pending', 'confirmed']
+            ).exists()
+            if already_reserved:
+                self.add_error('room', 'You already have an active reservation for this room.')
 
         return cleaned_data
 

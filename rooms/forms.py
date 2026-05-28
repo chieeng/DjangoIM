@@ -77,13 +77,10 @@ class RoomAssignmentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Only show confirmed reservations that don't already have an assignment
+        assigned_ids = RoomAssignment.objects.values_list('reservation_id', flat=True)
         self.fields['reservation'].queryset = Reservation.objects.filter(
             reservation_status='confirmed'
-        ).exclude(
-            room_assignments__isnull=False
-        ).select_related('customer', 'room')
-        # Only show rooms that are reserved (waiting for assignment)
+        ).exclude(pk__in=assigned_ids).select_related('customer', 'room')
         self.fields['room'].queryset = Room.objects.filter(
             status='reserved'
         ).select_related('room_type')

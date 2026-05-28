@@ -4,19 +4,6 @@ from rooms.models import Room
 
 
 class Reservation(models.Model):
-    """
-    RESERVATION — records a guest's booking request for a room.
-
-    FK rules (IM2):
-      - customer → USER: CASCADE
-        If a user account is deleted, all their reservations are deleted.
-        A reservation cannot exist without an owner.
-
-      - room → ROOM: SET_NULL
-        If a room record is removed (e.g., room decommissioned),
-        the historical reservation is kept for records but the room
-        reference is set to null. History is preserved.
-    """
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
@@ -26,13 +13,11 @@ class Reservation(models.Model):
     ]
 
     reservation_id = models.AutoField(primary_key=True)
-    # CASCADE: reservation belongs to a user; user deleted = reservations deleted
     customer = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
         related_name='reservations'
     )
-    # SET_NULL: preserve reservation history even if the room is removed
     room = models.ForeignKey(
         Room,
         on_delete=models.SET_NULL,
@@ -61,14 +46,6 @@ class Reservation(models.Model):
 
 
 class Booking(models.Model):
-    """
-    BOOKING — financial record tied to a confirmed reservation.
-
-    FK rules (IM2):
-      - reservation → RESERVATION: CASCADE
-        A booking cannot exist without a reservation.
-        If the reservation is deleted, the booking is deleted too.
-    """
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
@@ -77,7 +54,6 @@ class Booking(models.Model):
     ]
 
     booking_id = models.AutoField(primary_key=True)
-    # CASCADE: booking is a child of reservation
     reservation = models.OneToOneField(
         Reservation,
         on_delete=models.CASCADE,
