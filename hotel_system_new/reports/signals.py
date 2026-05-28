@@ -13,7 +13,8 @@ def update_report_on_booking_create(sender, instance, created, **kwargs):
     # Get or create report for this date
     report, _ = Report.objects.get_or_create(report_date=booking_date)
     
-    # Save will trigger calculate_data() method
+    # Calculate data and save
+    report.calculate_data()
     report.save()
 
 
@@ -25,6 +26,7 @@ def update_report_on_booking_delete(sender, instance, **kwargs):
     try:
         report = Report.objects.get(report_date=booking_date)
         # Recalculate the data
+        report.calculate_data()
         report.save()
     except Report.DoesNotExist:
         pass

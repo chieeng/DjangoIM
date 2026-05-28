@@ -123,7 +123,7 @@ def create_sample_rooms():
         )
         if created:
             total += 1
-            print(f"✓ Created: Room {room_data['room_number']} ({room_data['room_type']}) - ${room_data['price_per_night']:.2f}/night")
+            print(f"✓ Created: Room {room_data['room_number']} ({room_data['room_type']}) - ₱{room_data['price_per_night']:.2f}/night")
         else:
             print(f"⚠ Already exists: Room {room_data['room_number']}")
     

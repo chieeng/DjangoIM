@@ -23,7 +23,7 @@ class Invoice(models.Model):
         verbose_name_plural = 'Invoices'
 
     def __str__(self):
-        return f"Invoice {self.invoice_id} - ${self.total_amount}"
+        return f"Invoice {self.invoice_id} - ₱{self.total_amount}"
 
 
 class Payment(models.Model):
@@ -56,7 +56,7 @@ class Payment(models.Model):
         verbose_name_plural = 'Payments'
 
     def __str__(self):
-        return f"Payment {self.payment_id} - ${self.amount_paid}"
+        return f"Payment {self.payment_id} - ₱{self.amount_paid}"
 
 
 class Discount(models.Model):

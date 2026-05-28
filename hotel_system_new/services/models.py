@@ -28,7 +28,7 @@ class Service(models.Model):
         verbose_name_plural = 'Services'
 
     def __str__(self):
-        return f"{self.service_name} - ${self.price}"
+        return f"{self.service_name} - ₱{self.price}"
 
 
 class ServiceRequest(models.Model):

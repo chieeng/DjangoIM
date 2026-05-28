@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from datetime import datetime
 
 from .forms import ReportForm
 from .models import Report
@@ -11,12 +14,9 @@ def index(request):
     date_filter = request.GET.get('date', '')
     if date_filter:
         try:
-            from datetime import datetime
-
             d = datetime.strptime(date_filter, '%Y-%m-%d').date()
             reports = reports.filter(report_date=d)
         except ValueError:
-            # ignore invalid date filter
             date_filter = ''
 
     summary = {
@@ -49,6 +49,30 @@ def add_report(request):
     return render(request, 'reports/addNewReport.html', {
         'form': form,
         'title': 'Add New Booking Report',
+    })
+
+
+@login_required(login_url='accounts:login')
+@require_http_methods(["GET"])
+def get_report_data(request):
+    """API endpoint to fetch calculated report data for a given date"""
+    date_str = request.GET.get('date')
+    if not date_str:
+        return JsonResponse({'error': 'Date parameter required'}, status=400)
+
+    try:
+        report_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    except ValueError:
+        return JsonResponse({'error': 'Invalid date format. Use YYYY-MM-DD'}, status=400)
+
+    # Create a temporary report object to calculate data
+    temp_report = Report(report_date=report_date)
+    temp_report.calculate_data()
+
+    return JsonResponse({
+        'total_bookings': temp_report.total_bookings,
+        'revenue': float(temp_report.revenue),
+        'occupancy_rate': float(temp_report.occupancy_rate),
     })
 
 

@@ -5,10 +5,10 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.views.generic import RedirectView
+from common import views as common_views
 
 urlpatterns = [
-    path('', RedirectView.as_view(url='/reports/')),
+    path('', common_views.index, name='index'),
     path('reports/', include('reports.urls')),
     path('admin/', admin.site.urls),
     path('common/', include('common.urls')),

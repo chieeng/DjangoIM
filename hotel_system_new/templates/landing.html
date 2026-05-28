@@ -1,11 +1,9 @@
 {% extends 'base.html' %}
 
+{% block title %}Home - Hotel Management System{% endblock %}
+
 {% block content %}
 <style>
-    body {
-        background-color: #f8f9fa;
-    }
-
     .hero-booking {
         background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
         color: white;
@@ -26,12 +24,53 @@
         opacity: 0.95;
     }
 
+    .auth-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 40px;
+    }
+
+    .auth-buttons a {
+        padding: 12px 30px;
+        border-radius: 5px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .signin-btn {
+        background: white;
+        color: #1e3c72;
+        border: 2px solid white;
+    }
+
+    .signin-btn:hover {
+        background: transparent;
+        color: white;
+    }
+
+    .signup-btn {
+        background: #f39c12;
+        color: white;
+        border: 2px solid #f39c12;
+    }
+
+    .signup-btn:hover {
+        background: #e67e22;
+        border-color: #e67e22;
+    }
+
     .search-box {
         background: white;
         border-radius: 10px;
         padding: 30px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         margin-bottom: 40px;
+        margin-top: -40px;
+        position: relative;
+        z-index: 10;
     }
 
     .search-box h3 {
@@ -165,79 +204,12 @@
         transform: scale(1.02);
     }
 
-    .features {
-        background: white;
-        padding: 60px 0;
-        margin: 40px 0;
-    }
-
-    .feature-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 30px;
-    }
-
-    .feature-card {
-        text-align: center;
-        padding: 30px;
-    }
-
-    .feature-icon {
-        font-size: 2.5rem;
-        margin-bottom: 15px;
-    }
-
-    .feature-title {
-        font-size: 1.2rem;
-        color: #1e3c72;
-        margin-bottom: 10px;
-        font-weight: 600;
-    }
-
-    .feature-text {
-        color: #666;
-        line-height: 1.6;
-    }
-
-    .auth-buttons {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 40px;
-    }
-
-    .auth-buttons a {
-        padding: 12px 30px;
-        border-radius: 5px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.3s;
-    }
-
-    .signin-btn {
-        background: white;
-        color: #1e3c72;
-        border: 2px solid white;
-    }
-
-    .signin-btn:hover {
-        background: transparent;
-        color: white;
-    }
-
-    .signup-btn {
-        background: #f39c12;
-        color: white;
-        border: 2px solid #f39c12;
-    }
-
-    .signup-btn:hover {
-        background: #e67e22;
-        border-color: #e67e22;
+    .text-accent {
+        color: #f39c12;
     }
 </style>
 
+<!-- Hero Section -->
 <div class="hero-booking">
     <div class="container">
         <h1 class="hero-title">🏨 Luxury Hotel Rooms</h1>
@@ -245,8 +217,8 @@
         
         {% if not user.is_authenticated %}
         <div class="auth-buttons">
-            <a href="{% url 'accounts:login' %}" class="auth-buttons signin-btn">Sign In</a>
-            <a href="{% url 'accounts:register' %}" class="auth-buttons signup-btn">Create Account</a>
+            <a href="{% url 'accounts:login' %}" class="signin-btn">Log In</a>
+            <a href="{% url 'accounts:register' %}" class="signup-btn">Create Account</a>
         </div>
         {% else %}
         <p style="font-size: 1.1rem;">Welcome, {{ user.get_full_name|default:user.username }}!</p>
@@ -258,12 +230,12 @@
     <!-- Search Box -->
     <div class="search-box">
         <h3>🔍 Find Your Room</h3>
-        <form>
+        <form method="get" action="{% url 'rooms:room_list' %}">
             <div class="search-row">
-                <input type="date" placeholder="Check-in Date" required>
-                <input type="date" placeholder="Check-out Date" required>
-                <input type="number" min="1" max="10" value="1" placeholder="Number of Guests">
-                <select>
+                <input type="date" name="check_in" placeholder="Check-in Date">
+                <input type="date" name="check_out" placeholder="Check-out Date">
+                <input type="number" name="guests" min="1" max="10" value="1" placeholder="Number of Guests">
+                <select name="room_type">
                     <option value="">Room Type (Any)</option>
                     <option value="single">Single Room</option>
                     <option value="double">Double Room</option>
@@ -278,142 +250,41 @@
 
     <!-- Featured Rooms Section -->
     <section class="featured-rooms">
-        <h2 class="section-title">✨ Featured Rooms</h2>
+        <h2 class="section-title">⭐ Featured Rooms</h2>
         
+        {% if rooms %}
         <div class="room-grid">
-            <!-- Single Room -->
+            {% for room in rooms %}
             <div class="room-card">
-                <div class="room-img">🛏️</div>
+                <div class="room-img">
+                    {% if room.room_type == 'single' %}🛏️
+                    {% elif room.room_type == 'double' %}🛏️🛏️
+                    {% elif room.room_type == 'suite' %}🏠
+                    {% elif room.room_type == 'deluxe' %}👑
+                    {% elif room.room_type == 'penthouse' %}🌟
+                    {% else %}🏨{% endif %}
+                </div>
                 <div class="room-info">
-                    <div class="room-type">Single Room</div>
-                    <h3 class="room-name">Cozy Single Room</h3>
+                    <div class="room-type">{{ room.room_type }}</div>
+                    <h3 class="room-name">{{ room.room_number }}</h3>
                     <div class="room-details">
-                        ✓ 15 m² • 1 Guest • WiFi • AC
+                        ✓ {{ room.capacity }} Guests • WiFi • AC
                     </div>
-                    <div class="room-price">₱4,900<small>/night</small></div>
-                    {% if user.is_authenticated and user.role_type in 'staff,admin' %}
-                        <a href="{% url 'rooms:index' %}" class="book-btn">Manage Room</a>
+                    <div class="room-price">₱{{ room.price_per_night }}<small>/night</small></div>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'rooms:room_detail' room.id %}" class="book-btn">Book Now</a>
                     {% else %}
                         <button class="book-btn" onclick="alert('Sign in to book')">Book Now</button>
                     {% endif %}
                 </div>
             </div>
-
-            <!-- Double Room -->
-            <div class="room-card">
-                <div class="room-img">🛏️🛏️</div>
-                <div class="room-info">
-                    <div class="room-type">Double Room</div>
-                    <h3 class="room-name">Comfortable Double Room</h3>
-                    <div class="room-details">
-                        ✓ 25 m² • 2 Guests • WiFi • AC
-                    </div>
-                    <div class="room-price">₱7,100<small>/night</small></div>
-                    {% if user.is_authenticated and user.role_type in 'staff,admin' %}
-                        <a href="{% url 'rooms:index' %}" class="book-btn">Manage Room</a>
-                    {% else %}
-                        <button class="book-btn" onclick="alert('Sign in to book')">Book Now</button>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Suite -->
-            <div class="room-card">
-                <div class="room-img">🏠</div>
-                <div class="room-info">
-                    <div class="room-type">Suite</div>
-                    <h3 class="room-name">Deluxe Suite</h3>
-                    <div class="room-details">
-                        ✓ 40 m² • 3 Guests • WiFi • AC • Balcony
-                    </div>
-                    <div class="room-price">₱10,400<small>/night</small></div>
-                    {% if user.is_authenticated and user.role_type in 'staff,admin' %}
-                        <a href="{% url 'rooms:index' %}" class="book-btn">Manage Room</a>
-                    {% else %}
-                        <button class="book-btn" onclick="alert('Sign in to book')">Book Now</button>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Deluxe -->
-            <div class="room-card">
-                <div class="room-img">👑</div>
-                <div class="room-info">
-                    <div class="room-type">Deluxe</div>
-                    <h3 class="room-name">Premium Deluxe Room</h3>
-                    <div class="room-details">
-                        ✓ 50 m² • 4 Guests • WiFi • AC • Jacuzzi
-                    </div>
-                    <div class="room-price">₱13,700<small>/night</small></div>
-                    {% if user.is_authenticated and user.role_type in 'staff,admin' %}
-                        <a href="{% url 'rooms:index' %}" class="book-btn">Manage Room</a>
-                    {% else %}
-                        <button class="book-btn" onclick="alert('Sign in to book')">Book Now</button>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Penthouse -->
-            <div class="room-card">
-                <div class="room-img">🌟</div>
-                <div class="room-info">
-                    <div class="room-type">Penthouse</div>
-                    <h3 class="room-name">Luxury Penthouse</h3>
-                    <div class="room-details">
-                        ✓ 100 m² • 6 Guests • WiFi • AC • Full Service
-                    </div>
-                    <div class="room-price">₱27,500<small>/night</small></div>
-                    {% if user.is_authenticated and user.role_type in 'staff,admin' %}
-                        <a href="{% url 'rooms:index' %}" class="book-btn">Manage Room</a>
-                    {% else %}
-                        <button class="book-btn" onclick="alert('Sign in to book')">Book Now</button>
-                    {% endif %}
-                </div>
-            </div>
+            {% endfor %}
         </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="features">
-        <h2 class="section-title">✨ Why Choose Us?</h2>
-        
-        <div class="feature-grid">
-            <div class="feature-card">
-                <div class="feature-icon">💯</div>
-                <h3 class="feature-title">Best Price Guarantee</h3>
-                <p class="feature-text">We guarantee the lowest prices on luxury hotel rooms. If you find a better rate elsewhere, we'll match it!</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">🛡️</div>
-                <h3 class="feature-title">Secure Booking</h3>
-                <p class="feature-text">Your personal information is secure and encrypted. Book with confidence and peace of mind.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3 class="feature-title">Instant Confirmation</h3>
-                <p class="feature-text">Get instant email confirmation of your booking. No waiting, book now and travel tomorrow!</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">💬</div>
-                <h3 class="feature-title">24/7 Support</h3>
-                <p class="feature-text">Our customer support team is available 24/7 to help you with any questions or concerns.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">🌍</div>
-                <h3 class="feature-title">Global Reach</h3>
-                <p class="feature-text">Book rooms worldwide with our international hotel network. We operate across all continents.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">⭐</div>
-                <h3 class="feature-title">Verified Reviews</h3>
-                <p class="feature-text">Read authentic guest reviews from verified bookings. Make informed decisions about your stay.</p>
-            </div>
+        {% else %}
+        <div style="text-align: center; padding: 60px 0; color: #666;">
+            <p style="font-size: 1.1rem;">No rooms are currently available. Please check back soon.</p>
         </div>
+        {% endif %}
     </section>
 </div>
 
